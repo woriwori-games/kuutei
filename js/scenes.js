@@ -84,6 +84,7 @@ const Scenes = (() => {
 
     S().playerName = name;
     await play(sc.namingDone);
+    await play(sc.whyShip);
     return "map";
   }
 
@@ -104,7 +105,7 @@ const Scenes = (() => {
         <div class="places">${places}</div>
         <button class="place base" data-go="base">
           <span class="place-name">拠点に戻る${canAlchemy ? '<span class="badge">！</span>' : ""}</span>
-          <span class="place-desc">${canAlchemy ? "相棒が欠片を調整したがっている" : "空挺の骨組みがある"}</span>
+          <span class="place-desc">${canAlchemy ? "相棒が欠片の形を決めたがっている" : "空挺の骨組みがある"}</span>
         </button>
         <button class="small" data-go="title">タイトルへ</button>
       </div>`);
@@ -119,9 +120,9 @@ const Scenes = (() => {
       Game.addTalk("opa");
       await play(sc.kounFirst);
       await play(sc.record0412);
-      await play(sc.kounFragment);
+      await play(sc.kounAfterRecord);
       s.flags.metOpa = true;
-      s.fragments.push("ureshii");
+      s.fragments.push("koun0412");
       s.progress = Math.max(s.progress, 1);
     }
     UI.setBg("koun");
@@ -134,7 +135,14 @@ const Scenes = (() => {
       ]);
       if (i === 0) {
         const n = Game.addTalk("opa");
-        await play(pickByCount(sc.opaTalks, n - 2));
+        const reading = s.choices.koun0412_reading;
+        if (reading && !s.flags.toldOpa) {
+          // 錬金で読んだ行間を、おぱに伝える（一度だけ）
+          s.flags.toldOpa = true;
+          await play(sc.opaTold[reading]);
+        } else {
+          await play(pickByCount(sc.opaTalks, n - 2));
+        }
       } else if (i === 1) {
         await play(sc.record0412);
       } else {
@@ -181,17 +189,19 @@ const Scenes = (() => {
     }
   }
 
-  // 欠片を調整して空挺にはめる
+  // 記録の行間を読んで欠片の形を決め、空挺にはめる
   async function alchemy() {
     const s = S();
-    const id = s.fragments[0];
+    const recordId = s.fragments.shift();
+    const steps = sc["alchemy_" + recordId];
+    if (!steps) return; // 古いセーブなどで会話が無いときは何もしない
+
+    const ctx = await play(steps);
+    const id = ctx.reading;
     const frag = D.fragments[id];
     const part = D.shipParts.find((p) => p.system === frag.system);
+    s.choices[recordId + "_reading"] = id;
 
-    const ctx = await play(sc["alchemy_" + id]);
-    s.choices[id + "_reaction"] = ctx.reaction;
-
-    s.fragments.shift();
     s.ship[part.id].push({ id, tuning: ctx.tuning });
     s.emotions[frag.system]++;
     s.progress = Math.max(s.progress, 2);
