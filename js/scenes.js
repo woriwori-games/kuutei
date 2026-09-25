@@ -137,7 +137,7 @@ const Scenes = (() => {
         const n = Game.addTalk("opa");
         const reading = s.choices.koun0412_reading;
         if (reading && !s.flags.toldOpa) {
-          // 錬金で読んだ行間を、おぱに伝える（一度だけ）
+          // 錬金で読んだ温度を、おぱに伝える（一度だけ）
           s.flags.toldOpa = true;
           await play(sc.opaTold[reading]);
         } else {
@@ -189,7 +189,7 @@ const Scenes = (() => {
     }
   }
 
-  // 記録の行間を読んで欠片の形を決め、空挺にはめる
+  // 記録の本当の温度を読んで欠片の形を決め、空挺にはめる
   async function alchemy() {
     const s = S();
     const recordId = s.fragments.shift();

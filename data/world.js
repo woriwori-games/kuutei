@@ -50,7 +50,7 @@ GAME_DATA.shipParts = [
   { id: "lift",       name: "浮遊", system: "joushou" }
 ];
 
-// 感情の欠片。記録の行間をどう読んだかで、どれになるかが決まる
+// 感情の欠片。記録の温度をどう読んだかで、どれになるかが決まる
 // system が空挺のどの部位にはまるかを決める（shipParts を参照）
 GAME_DATA.fragments = {
   ureshii: { name: "嬉しい", system: "dou",     from: "opa", color: "#f6ad55" },
