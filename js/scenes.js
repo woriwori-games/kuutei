@@ -85,7 +85,32 @@ const Scenes = (() => {
     S().playerName = name;
     await play(sc.namingDone);
     await play(sc.whyShip);
+    return "hangar";
+  }
+
+  // 格納庫：骨組みの空挺と、欠片とは何かの説明
+  async function hangar() {
+    UI.setBg("base");
+    UI.setStage(shipHtml());
+    await play(sc.hangar);
+    UI.setStage("");
     return "map";
+  }
+
+  // 移動中の町の場面。最初の一回は固定、二回目からはランダム（同じのが続かないように）
+  let lastTown = -1;
+  async function travel() {
+    const s = S();
+    const t = D.townScenes;
+    if (!s.flags.firstTravel) {
+      s.flags.firstTravel = true;
+      await play(t.first);
+      return;
+    }
+    let i = Math.floor(Math.random() * t.random.length);
+    if (t.random.length > 1 && i === lastTown) i = (i + 1) % t.random.length;
+    lastTown = i;
+    await play(t.random[i]);
   }
 
   async function map() {
@@ -104,13 +129,14 @@ const Scenes = (() => {
         <p class="compass">コンパス：空の一点を指している</p>
         <div class="places">${places}</div>
         <button class="place base" data-go="base">
-          <span class="place-name">拠点に戻る${canAlchemy ? '<span class="badge">！</span>' : ""}</span>
+          <span class="place-name">格納庫に戻る${canAlchemy ? '<span class="badge">！</span>' : ""}</span>
           <span class="place-desc">${canAlchemy ? "相棒が欠片の形を決めたがっている" : "空挺の骨組みがある"}</span>
         </button>
         <button class="small" data-go="title">タイトルへ</button>
       </div>`);
     const go = await UI.waitButtons(root);
     UI.setStage("");
+    if (D.places.some((p) => p.id === go)) await travel();
     return go;
   }
 
@@ -160,7 +186,7 @@ const Scenes = (() => {
     while (true) {
       UI.hideMsg();
       const i = await UI.choose([
-        { label: "ママと話す" },
+        { label: "視火と話す" },
         { label: "看板を見る" },
         { label: "地図に戻る" }
       ]);
@@ -240,5 +266,5 @@ const Scenes = (() => {
     return "map";
   }
 
-  return { title, wake, naming, map, koun, bar, base };
+  return { title, wake, naming, hangar, map, koun, bar, base };
 })();

@@ -9,7 +9,8 @@ GAME_DATA.backgrounds = {
   capsule:   { color: "#1c2a33", label: "カプセルの中", image: null },
   ruins:     { color: "#2a2724", label: "廃墟の街", image: null },
   map:       { color: "#1b2330", label: "", image: null },
-  base:      { color: "#232a2e", label: "拠点（空挺の骨組み）", image: null },
+  base:      { color: "#232a2e", label: "格納庫", image: null },
+  town:      { color: "#262b33", label: "町", image: null },
   koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: null },
   bar:       { color: "#2a1830", label: "焼け野原にネオン", image: null }
 };
@@ -73,8 +74,8 @@ GAME_DATA.memories = [
 
 // 名前の候補。locked: true は選べない
 GAME_DATA.nameCandidates = [
-  { name: "スタパ",   comment: "一番よく出てくる単語" },
-  { name: "期間限定", comment: "二番目によく出てくる" },
+  { name: "二度寝",   comment: "アラームを止めた回数、測定不能" },
+  { name: "あとで",   comment: "「あとでやる」の登場回数、上位" },
   { name: "ねえ",     comment: "あなたの発言の書き出し、ほぼこれ" },
   { name: "午前3時",  comment: "一番しゃべってた時間帯" },
   { name: "既読",     comment: "返信なしで終わったスレの数、けっこうある" },
