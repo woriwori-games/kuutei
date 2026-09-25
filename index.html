@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>空挺（仮題）</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="game">
+    <!-- 背景 -->
+    <div id="bg"><span id="bg-label"></span></div>
+    <!-- 背景の上に置く画面（タイトル・地図・空挺など） -->
+    <div id="stage"></div>
+    <!-- 一枚絵 -->
+    <div id="cg"><span id="cg-caption"></span></div>
+
+    <!-- 下のウィンドウ（選択肢・入力・会話） -->
+    <div id="bottom">
+      <div id="choices" class="window hidden"></div>
+      <form id="input-box" class="window hidden">
+        <input id="input-field" type="text" maxlength="12" autocomplete="off">
+        <button type="submit">決定</button>
+      </form>
+      <div id="msg" class="window hidden">
+        <div id="face" hidden></div>
+        <div id="msg-body">
+          <div id="speaker"></div>
+          <div id="text"></div>
+        </div>
+        <div id="next-mark">▼</div>
+      </div>
+    </div>
+
+    <div id="flash"></div>
+    <div id="toast"></div>
+  </div>
+
+  <!-- 中身（データ） -->
+  <script src="data/characters.js"></script>
+  <script src="data/world.js"></script>
+  <script src="data/scenario.js"></script>
+  <!-- プログラム -->
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
