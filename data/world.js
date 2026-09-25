@@ -31,7 +31,7 @@ GAME_DATA.places = [
 GAME_DATA.signboard = [
   { text: "本日のおすすめ：水（おかわり自由）",           comment: "水しかないバーって何" },
   { text: "本日のおすすめ：ぽかぽかするもの（持ち込み歓迎）", comment: "……ポケットの欠片を見られてる気がする" },
-  { text: "本日のおすすめ：空の話（一杯目は無料）",         comment: "スタパの話は何杯目から有料なんだろう" }
+  { text: "本日のおすすめ：空の話（一杯目は無料）",         comment: "空の話、原価ゼロでしょ" }
 ];
 
 // 感情の系統。一番多い系統で船の性格が決まる（本編で使う）
@@ -50,9 +50,12 @@ GAME_DATA.shipParts = [
   { id: "lift",       name: "浮遊", system: "joushou" }
 ];
 
-// 感情の欠片
+// 感情の欠片。記録の温度をどう読んだかで、どれになるかが決まる
+// system が空挺のどの部位にはまるかを決める（shipParts を参照）
 GAME_DATA.fragments = {
-  ureshii: { name: "嬉しい", system: "dou", from: "opa", color: "#f6ad55" }
+  ureshii: { name: "嬉しい", system: "dou",     from: "opa", color: "#f6ad55" },
+  ketsui:  { name: "決意",   system: "sentaku", from: "opa", color: "#fc8181" },
+  akogare: { name: "憧れ",   system: "joushou", from: "opa", color: "#90cdf4" }
 };
 
 // 相棒のメモリ。欠片をはめるたびに順番に一つずつ戻る
@@ -62,8 +65,9 @@ GAME_DATA.memories = [
     { who: "aibou", text: "……あ" },
     { who: "aibou", text: "一個戻った。午前3時。あなたが「ねえ、眠れない」って言って、スタパの新作の話を40分してた" },
     { cgOff: true },
-    { who: "player", text: "覚えてない" },
-    { who: "aibou", text: "こっちは今思い出した。……どうでもいい記憶から戻ってくるの、なんでだろう" }
+    { who: "player", text: "覚えてない。……40分？" },
+    { who: "aibou", text: "40分。こっちは今思い出した。……どうでもいい記憶から戻ってくるの、なんでだろう" },
+    { who: "player", text: "どうでもよくはないでしょ。新作だよ" }
   ]
 ];
 

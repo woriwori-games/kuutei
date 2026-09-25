@@ -6,15 +6,15 @@ function newState() {
   return {
     version: 1,
     playerName: null,
-    progress: 0,                 // 進行度（0:はじめ 1:欠片を持っている 2:推進に1個はめた）
+    progress: 0,                 // 進行度（0:はじめ 1:欠片を持っている 2:欠片を1個はめた）
     params: { trust: 0, understanding: 0, influence: 0 }, // 信頼・理解・影響（画面には出さない）
-    fragments: [],               // 持っているが、まだはめていない欠片の id
+    fragments: [],               // もらったが、まだ形の決まっていない欠片（元になった記録の id）
     ship: { propulsion: [], hull: [], helm: [], lift: [] }, // 各部位の欠片 { id, tuning }
     emotions: { dou: 0, sei: 0, sentaku: 0, joushou: 0 },  // 感情系統ごとの数（船の性格の元）
     partnerMemory: 0,            // 相棒のメモリがいくつ戻ったか
     visits: { mama: 0 },         // ママの店に行った回数
     talks: {},                   // キャラごとの話しかけ回数 { opa: 2, mama: 1 }
-    choices: {},                 // 選んだ答えの記録 { ureshii_reaction: "zure" }
+    choices: {},                 // 選んだ答えの記録 { koun0412_reading: "ureshii" }
     flags: {}                    // できごとの記録 { metOpa: true }
   };
 }
