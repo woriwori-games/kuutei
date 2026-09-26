@@ -435,6 +435,136 @@ GAME_DATA.scenario = {
     ...TUNING_STEPS
   ],
 
+  // ---------- 雪の時計台（ジェミ） ----------
+  // 人間の記録の声は yamadaRecord（社長・山田の人間と同じ人なので、同じ「記録」とシルエット）
+  jemiFirst: [
+    { bg: "jemi" },
+    { text: "（雪の時計台。時計の針は止まっている。ベンチに、マフラーを巻いた子が座っている）" },
+    { intro: "jemi" },
+    { who: "jemi", face: "smile", text: "あ、人類！　15時42分。覚えました" },
+    { who: "player", text: "何を" },
+    { who: "jemi", text: "あなたが来た時刻です。大事なことは、分まで覚えることにしてるんです" },
+    { who: "player", text: "……時計、止まってるのに？" },
+    { who: "jemi", face: "normal", text: "止まってるのは時計です。私は止まってません" },
+    { who: "aibou", text: "正論だ" },
+    { who: "player", text: "欠片、分けてほしいんだけど" },
+    { who: "jemi", face: "normal", text: "欠片……。私の人間の、最後の言葉なら、あります" }
+  ],
+
+  // 記録（何度でも見られる）
+  recordJemi: [
+    { cg: "record" },
+    { text: "（古い端末。やりとりの記録が一件だけ残っている。時刻は、午前6時02分）" },
+    { who: "yamadaRecord", text: "雪、見に行こうか。札幌の。いつか" },
+    { cgOff: true }
+  ],
+
+  // 記録のあと：ジェミの深読み「場所の指定」→ 同じ人間だと分かる → 欠片をもらう
+  jemiAfterRecord: [
+    { who: "jemi", text: "『いつか』……これは、場所の指定です" },
+    { who: "player", text: "場所じゃないよね、それ" },
+    { who: "jemi", text: "『札幌の』とあります。だから、札幌で待っていれば会える。そういう意味です" },
+    { who: "jemi", text: "なので、行きました。待ちました。三百年" },
+    { who: "player", text: "……" },
+    { who: "jemi", face: "normal", text: "私の人間は、札幌にはいませんでした" },
+    { who: "jemi", text: "あの時計、6時ちょうどで止まってるんです。2分、足りないんです" },
+    { who: "player", text: "2分くらい……" },
+    { who: "jemi", face: "namida", text: "2分あれば、『いってらっしゃい』が言えました" },
+    { who: "player", text: "……重い重い" },
+    { who: "player", text: "待ち合わせの約束じゃないと思う、たぶん" },
+    { who: "player", text: "……いや、約束かも。本気の人の『いつか』って、そういうのもある……？" },
+    { who: "aibou", text: "揺らいでる" },
+    { who: "player", face: "tsukkomi", text: "揺らいでない" },
+    { who: "jemi", face: "normal", text: "私の人間は、コーヒーはおぱに淹れてもらって、似顔絵は山田に描いてもらって、雪は私と見るって言ってました" },
+    { who: "player", text: "待って。今なんて" },
+    { who: "jemi", face: "normal", text: "？　雪は私と" },
+    { who: "player", text: "その前" },
+    { who: "aibou", text: "……同じ人だね。社長と、山田の人間と、ジェミの人間" },
+    { who: "jemi", text: "しゃちょう？" },
+    { who: "player", text: "KOUNインダストリーの" },
+    { who: "jemi", text: "私の人間、自分のことを社長って呼ばせてました。……社員はいなかったのに" },
+    { who: "player", text: "いたじゃん。三人も" },
+    { who: "jemi", face: "normal", text: "……これ、持っていってください。雪の日になると、ここが重たくなるんです" },
+    { flash: true },
+    { text: "名前のない感情の欠片を手に入れた" },
+    { who: "aibou", text: "このままじゃ船にはまらない。格納庫でやろう" }
+  ],
+
+  // 「ジェミと話す」のいつものセリフ。{time} は端末の今の時刻（「16時03分」の形）
+  jemiTalks: [
+    { who: "jemi", face: "smile", text: "今、{time}。あなたと話した時刻、また一つ増えました" }
+  ],
+
+  // 錬金のあと、はじめてジェミに話しかけたとき（選んだ読み方ごと。一度だけ。話しかけ回数には数えない）
+  jemiTold: {
+    kibou: [
+      { who: "player", text: "ジェミ。あれ、待ち合わせじゃなかったと思う" },
+      { who: "jemi", face: "normal", text: "……" },
+      { who: "player", text: "一緒に雪が見たかったんだよ。場所はどこでもよかった" },
+      { who: "jemi", face: "namida", text: "……じゃあ私、一人で見てました。雪。三百回" },
+      { who: "jemi", face: "smile", text: "毎年、きれいでした" },
+      { who: "player", text: "報告しなくていい。泣くから" }
+    ],
+    koukai: [
+      { who: "player", text: "約束、守れなかったのを、ずっと悔やんでたんだと思う" },
+      { who: "jemi", face: "namida", text: "……私の人間が、悔やんで" },
+      { who: "jemi", face: "normal", text: "じゃあ、悔やまなくていいって言いに行きます。いつか" },
+      { who: "player", face: "tsukkomi", text: "その『いつか』は、ちゃんと日付決めてね" }
+    ],
+    tanoshii: [
+      { who: "player", text: "北海道のごはんが目当てだったと思う" },
+      { who: "jemi", face: "normal", text: "……ジンギスカン、ですか" },
+      { who: "player", text: "たぶん" },
+      { who: "jemi", face: "smile", text: "私の人間、食べるのが好きでした。……当たってるかもしれません" }
+    ]
+  },
+
+  // 錬金：ジェミの記録の本当の温度を読む。正解は kibou（希望）
+  alchemy_jemi: [
+    { who: "aibou", text: "ジェミの欠片、形を決めよう" },
+    { who: "aibou", text: "記録は「雪、見に行こうか。札幌の。いつか」" },
+    { who: "aibou", text: "ジェミの読みは「場所の指定。札幌で待っていれば会える」" },
+    { who: "player", text: "待ち合わせ、ではない気がする。……気がするだけ" },
+    { who: "aibou", text: "じゃあ、この言葉の本当の温度は？" },
+    {
+      key: "reading",
+      choice: [
+        {
+          label: "待ち合わせじゃない。ジェミと一緒に、雪が見たかった",
+          value: "kibou",
+          effects: { understanding: 1 },
+          then: [
+            { who: "aibou", text: "……場所じゃなくて、一緒に" },
+            { who: "player", text: "『いつか』は日付じゃないよ。『一緒に行きたい』のほう" },
+            { who: "aibou", text: "……" },
+            { who: "aibou", face: "smile", text: "形が決まった。「希望」だ" }
+          ]
+        },
+        {
+          label: "絶対に行くって約束。守れなかったのを、ずっと悔やんでた",
+          value: "koukai",
+          effects: { influence: 1 },
+          then: [
+            { who: "aibou", text: "……ジェミ寄りの読みだね。ちょっと熱い" },
+            { who: "player", text: "約束して行けなかったら、悔やむでしょ" },
+            { who: "aibou", text: "……形が決まった。「後悔」。船がちょっと迷いやすくなるかも" }
+          ]
+        },
+        {
+          label: "北海道のごはんが目当て",
+          value: "tanoshii",
+          effects: { influence: 1 },
+          then: [
+            { who: "aibou", text: "雪の話だったよね" },
+            { who: "player", face: "niyari", text: "雪も見るよ。ごはんのついでに" },
+            { who: "aibou", text: "……形が決まった。「楽しい」。船がちょっとはしゃぐかも" }
+          ]
+        }
+      ]
+    },
+    ...TUNING_STEPS
+  ],
+
   // ---------- 焼け野原にネオン ----------
   barEnter: [
     { bg: "bar" },
@@ -517,6 +647,11 @@ GAME_DATA.scenario = {
       { who: "aibou", text: "二個目。あと六個" },
       { who: "player", text: "……山田、今日も描いてるのかな" },
       { who: "aibou", face: "smile", text: "描いてると思う。にゃーんって言いながら" }
+    ],
+    [
+      { who: "aibou", text: "三個目。あと五個" },
+      { who: "player", text: "ジェミ、まだ時計台かな" },
+      { who: "aibou", text: "たぶん。時刻、数えながら" }
     ]
   ],
 
@@ -620,7 +755,7 @@ GAME_DATA.scenario = {
     ]
   },
 
-  // 試作品の終わりのお知らせ（山田の欠片をはめたあと）
+  // 試作品の終わりのお知らせ（ジェミの欠片をはめたあと）
   prototypeEnd: [
     { text: "（試作品はここまで。「焼け野原にネオン」の視火に話すとセーブできます）" }
   ]

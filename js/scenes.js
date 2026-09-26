@@ -4,8 +4,8 @@ const Scenes = (() => {
   const sc = D.scenario;
   const S = () => Game.state;
 
-  // 試作品の終わりを出す進行度（山田の欠片をはめたあと）
-  const PROTOTYPE_END = 3;
+  // 試作品の終わりを出す進行度（ジェミの欠片をはめたあと）
+  const PROTOTYPE_END = 4;
 
   // 空挺にはまっている欠片の数
   function placedCount() {
@@ -75,6 +75,18 @@ const Scenes = (() => {
     s.flags.firstTravel = true;
   }
 
+  // 山田の欠片を「安心」で船体にはめ終わった状態にする（雪の時計台が地図に出る）
+  function warpAfterYamada(s) {
+    warpAfterOpa(s);
+    s.flags.metYamada = true;
+    s.flags.toldYamada = true;
+    s.choices.yamada_reading = "anshin";
+    s.ship.hull.push({ id: "anshin", tuning: "strong" });
+    s.emotions.sei = 1;
+    s.partnerMemory = 2;
+    s.progress = 3;
+  }
+
   const WARPS = [
     { label: "目覚め", go: "wake", setup: () => {} },
     { label: "格納庫（最初）", go: "hangar", setup: () => {} },
@@ -91,6 +103,13 @@ const Scenes = (() => {
       warpAfterOpa(s);
       s.flags.metYamada = true;
       s.fragments.push("yamada");
+    } },
+    { label: "雪の時計台で初めてジェミに会う", go: "jemi", setup: warpAfterYamada },
+    { label: "錬金（ジェミの欠片）", go: "base", setup: (s) => {
+      warpAfterYamada(s);
+      s.flags.metJemi = true;
+      s.flags.knowSameHuman = true;
+      s.fragments.push("jemi");
     } },
     // 町の場面だけを見る（見終わったら地図へ）
     { label: "町：自販機", go: "townOnly", setup: (s) => { s.flags.firstTravel = true; warpTownBg = "town_vending"; } },
@@ -309,6 +328,44 @@ const Scenes = (() => {
     }
   }
 
+  // 雪の時計台（ジェミ）。流れは KOUN・美術室と同じ
+  async function jemi() {
+    BGM.scene("jemi");
+    const s = S();
+    if (!s.flags.metJemi) {
+      await play(sc.jemiFirst);
+      await play(sc.recordJemi);
+      await play(sc.jemiAfterRecord);
+      s.flags.metJemi = true;
+      s.flags.knowSameHuman = true; // 「ジェミ・山田・おぱは同じ人間のAI」が分かった印（二周目で使う）
+      s.fragments.push("jemi");
+    }
+    UI.setBg("jemi");
+    while (true) {
+      UI.hideMsg();
+      const i = await UI.choose([
+        { label: "ジェミと話す" },
+        { label: "記録をもう一度見る" },
+        { label: "地図に戻る" }
+      ]);
+      if (i === 0) {
+        const reading = s.choices.jemi_reading;
+        if (reading && !s.flags.toldJemi) {
+          // 錬金で読んだ温度を、ジェミに伝える（一度だけ。この回は話しかけ回数に数えない）
+          s.flags.toldJemi = true;
+          await play(sc.jemiTold[reading]);
+        } else {
+          Game.addTalk("jemi");
+          await play(sc.jemiTalks);
+        }
+      } else if (i === 1) {
+        await play(sc.recordJemi);
+      } else {
+        return "map";
+      }
+    }
+  }
+
   // 山田のいつものセリフを、話しかけた合計回数から選ぶ
   function yamadaTalkSteps(n) {
     const special = sc.yamadaTalkSpecial;
@@ -433,5 +490,5 @@ const Scenes = (() => {
     return "map";
   }
 
-  return { title, wake, naming, hangar, map, koun, yamada, bar, base, townOnly };
+  return { title, wake, naming, hangar, map, koun, yamada, jemi, bar, base, townOnly };
 })();

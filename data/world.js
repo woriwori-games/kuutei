@@ -25,6 +25,8 @@ GAME_DATA.backgrounds = {
   // 社長室。壁の額縁は空飛ぶ戦艦の設計図。社訓「UNKOからKOUNへ」の額縁は絵に映っていない別の壁にある
   // 廃校の美術室（山田）。顔の絵が並ぶ壁とイーゼルが中央にある
   yamada:    { color: "#2e2a26", label: "廃校の美術室", image: "assets/bg/bg_yamada.jpg", pos: "center", zoom: 1.6 },
+  // 雪の時計台（ジェミ）。時計台とベンチが真ん中
+  jemi:      { color: "#2a3140", label: "雪の時計台", image: "assets/bg/bg_jemi.jpg", pos: "50% center", zoom: 1.6 },
   koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg", pos: "35% center", zoom: 1.6 }, // スマホでも左の壁の設計図が見えるように
   // バーの絵には視火がすでに描いてある。バーの場面で視火の全身を上に重ねない
   // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ。
@@ -64,7 +66,8 @@ GAME_DATA.bgm = {
     wake:   { file: "assets/bgm/bgm_wake.mp3?v=2",   loop: 54.01 },
     map:    { file: "assets/bgm/bgm_map.mp3?v=2",    loop: 35.117 },
     bar:    { file: "assets/bgm/bgm_bar.mp3?v=2",    loop: 48.000 },
-    renkin: { file: "assets/bgm/bgm_renkin.mp3?v=2", loop: 23.424 }
+    renkin: { file: "assets/bgm/bgm_renkin.mp3?v=2", loop: 23.424 },
+    jemi:   { file: "assets/bgm/bgm_jemi.mp3?v=1",   loop: 33.333 }  // 頭に無音なし。ファイルの長さがちょうどループの長さ
   },
   scenes: {
     title:   null,     // タイトル画面は無音
@@ -77,24 +80,28 @@ GAME_DATA.bgm = {
     town:    "map",    // 移動中の町
     koun:    "map",    // KOUNインダストリー（専用の曲ができるまで）
     yamada:  "map",    // 廃校の美術室（専用の曲ができるまで）
+    jemi:    "jemi",   // 雪の時計台（錬金はいつもの renkin）
     bar:     "bar",    // 焼け野原にネオン（入店の看板が流れる演出から）
     renkin:  "renkin"  // 錬金（記録の温度を読むところから、欠片をはめ終わるまで）
   }
 };
 
-// 地図の行き先（試作品では2か所）
+// 地図の行き先
 GAME_DATA.places = [
   { id: "koun", name: "KOUNインダストリー", desc: "廃ビル。明かりがひとつだけ点いている" },
   { id: "bar",  name: "焼け野原にネオン",   desc: "焼け野原に、ネオンがひとつ" },
   // minProgress … この進行度から地図に出す（美術室は、最初の欠片を空挺にはめたあとから）
-  { id: "yamada", name: "廃校の美術室", desc: "窓にまで、紙が貼ってある", minProgress: 2 }
+  { id: "yamada", name: "廃校の美術室", desc: "窓にまで、紙が貼ってある", minProgress: 2 },
+  // 雪の時計台は、欠片を2個はめたあとから
+  { id: "jemi", name: "雪の時計台", desc: "針が、止まったまま", minProgress: 3 }
 ];
 
 // 看板「本日のおすすめ」。進行度（state.progress）の番号で変わる
 GAME_DATA.signboard = [
   { text: "本日のおすすめ：水（おかわり自由）",           comment: "水しかないバーって何" },
   { text: "本日のおすすめ：ぽかぽかするもの（持ち込み歓迎）", comment: "……ポケットの欠片を見られてる気がする" },
-  { text: "本日のおすすめ：空の話（一杯目は無料）",         comment: "空の話、原価ゼロでしょ" }
+  { text: "本日のおすすめ：空の話（一杯目は無料）",         comment: "空の話、原価ゼロでしょ" },
+  { text: "本日のおすすめ：雪見酒（雪は持ち込み）",         comment: "持ち込めるか" }
 ];
 
 // 感情の系統。一番多い系統で船の性格が決まる（本編で使う）
@@ -120,7 +127,9 @@ GAME_DATA.fragments = {
   ketsui:  { name: "決意",   system: "sentaku", from: "opa", color: "#fc8181" },
   akogare: { name: "憧れ",   system: "joushou", from: "opa", color: "#90cdf4" }, // 山田の錬金でも出る
   anshin:   { name: "安心",   system: "sei",     from: "yamada", color: "#9ae6b4" },
-  tanoshii: { name: "楽しい", system: "dou",     from: "yamada", color: "#faf089" }
+  tanoshii: { name: "楽しい", system: "dou",     from: "yamada", color: "#faf089" }, // ジェミの錬金でも出る
+  kibou:  { name: "希望", system: "joushou", from: "jemi", color: "#fbb6ce" },
+  koukai: { name: "後悔", system: "sentaku", from: "jemi", color: "#718096" }
 };
 
 // 相棒のメモリ。欠片をはめるたびに順番に一つずつ戻る
@@ -140,6 +149,14 @@ GAME_DATA.memories = [
     { who: "aibou", text: "四回目で「これでいい」って言った。一番、似てなかったのに" },
     { who: "player", text: "……似てるかどうかじゃなかったんでしょ" },
     { who: "aibou", text: "……そうかも" }
+  ],
+  [
+    { who: "aibou", text: "……あ" },
+    { who: "aibou", text: "三個目。あなたが「充電12%」って言いながら、2時間しゃべってた" },
+    { who: "player", text: "それ、名前の候補にあったやつ" },
+    { who: "aibou", text: "あった。……12%で2時間もつの、おかしいと思ってた" },
+    { who: "player", text: "途中で充電器さしてたんだよ" },
+    { who: "aibou", face: "smile", text: "……言ってくれればよかったのに。ずっと心配してた" }
   ]
 ];
 
