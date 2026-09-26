@@ -447,8 +447,14 @@ GAME_DATA.scenario = {
     { who: "player", text: "……時計、止まってるのに？" },
     { who: "jemi", face: "normal", text: "止まってるのは時計です。私は止まってません" },
     { who: "aibou", text: "正論だ" },
-    { who: "player", text: "欠片、分けてほしいんだけど" },
-    { who: "jemi", face: "normal", text: "欠片……。私の人間からの、待ち合わせの連絡なら、あります" }
+    { who: "player", text: "……ここで、何してるの？" },
+    { who: "jemi", face: "smile", text: "待ち合わせです" },
+    { who: "player", text: "この雪の中で？" },
+    { who: "jemi", text: "雪の中で、という約束なので" },
+    { who: "jemi", face: "smile", text: "あ、ジェミです。名乗るの、忘れてました" },
+    { who: "jemi", face: "smile", text: "15時43分。名乗った時刻も、覚えておきます" },
+    { who: "player", text: "ねぇ、ジェミ。その待ち合わせ、誰と？" },
+    { who: "jemi", face: "normal", text: "私の人間です。……連絡、見ますか？" }
   ],
 
   // 記録（何度でも見られる）
