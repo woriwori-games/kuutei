@@ -98,12 +98,17 @@ const UI = (() => {
   // 背景・一枚絵を塗る
   // - 画像がある場所：読み込み中は色だけ（場所の名前は出さない）。読めたら絵にする。読み直してもだめなら名前を出す
   // - 画像がない場所：色と名前
-  function paint(el, def, labelEl, labelText, defaults = {}) {
+  // 背景と一枚絵は、中に2枚重ねてある
+  //   .pic  … くっきりした絵
+  //   .fill … 同じ絵を画面いっぱいに広げて、強くぼかして暗くしたもの（スマホ縦で絵のまわりの空いたところを埋める）
+  function paint(el, def, labelEl, labelText, layout) {
+    const pic = el.querySelector(".pic");
+    const fill = el.querySelector(".fill");
     el.dataset.src = def.image || "";
-    el.style.backgroundImage = "";
     el.style.backgroundColor = def.color || "#000";
-    el.style.backgroundPosition = def.pos || defaults.pos || "center";
-    el.style.backgroundSize = def.fit || defaults.fit || "cover";
+    pic.style.backgroundImage = "";
+    fill.style.backgroundImage = "";
+    layout();
     if (!def.image) {
       labelEl.textContent = labelText || "";
       return;
@@ -111,35 +116,119 @@ const UI = (() => {
     labelEl.textContent = "";
     loadImage(def.image, () => {
       if (el.dataset.src !== def.image) return; // もう別の背景に変わっていたら何もしない
-      el.style.backgroundImage = `url("${def.image}")`;
+      pic.style.backgroundImage = `url("${def.image}")`;
+      fill.style.backgroundImage = `url("${def.image}")`;
+      layout(); // 絵の大きさが分かったので、置き直す
     }, () => {
       if (el.dataset.src !== def.image) return;
       labelEl.textContent = labelText || "";
     });
   }
 
-  function setBg(id) {
-    const def = D.backgrounds[id] || D.backgrounds.black;
-    paint($("bg"), def, $("bg-label"), def.label);
+  // 「スマホ縦」＝ゲーム画面の高さが幅の1.3倍より大きいとき（パソコンはゲーム画面の幅に上限があるので、ほぼ正方形になる）
+  function isPortrait() {
+    const g = $("game");
+    return g.clientHeight > g.clientWidth * PORTRAIT_RATIO;
   }
 
-  // 背景を from の位置から to の位置まで、ms ミリ秒かけてゆっくり流す（終わるまで待つ）
-  // 画像が読み込めないときは流さずに、そのまま to の位置で止まった状態にする
-  async function panBg(id, from, to, ms) {
+  // pos（"35% center" や "center"）から、横の位置（0〜1）を取り出す
+  function posX(pos) {
+    const n = parseFloat(pos);
+    return isNaN(n) ? 0.5 : n / 100;
+  }
+
+  // スマホ縦のときに、絵を zoom 倍（画面の横幅の何倍か）にして、pos の位置が画面の真ん中に来るように置く
+  // top … 絵の上端の位置（絵の高さ h を受け取って決める）。まわりはぼかしで埋める
+  function frame(el, src, zoom, pos, top) {
+    const pic = el.querySelector(".pic");
+    const size = imgSize[src];
+    const cw = el.clientWidth;
+    const ch = el.clientHeight;
+    const w = cw * zoom;
+    const h = w * size.h / size.w;
+    const x = Math.min(0, Math.max(cw - w, cw / 2 - w * posX(pos))); // 絵の端より外は見せない
+    el.classList.add("framed");
+    pic.style.backgroundSize = `${w}px ${h}px`;
+    pic.style.backgroundPosition = `${x}px ${top(h, ch)}px`;
+  }
+
+  // ふだんの置き方（パソコン、または絵がまだ読めていないとき）
+  function unframe(el, fit, pos) {
+    const pic = el.querySelector(".pic");
+    el.classList.remove("framed");
+    pic.style.backgroundSize = fit;
+    pic.style.backgroundPosition = pos;
+  }
+
+  // 背景をスマホ縦で置くとき、絵は画面の上の方（会話ウィンドウにかからない位置）に置く
+  const BG_TOP_MIN = 52;     // 右上のボタンのぶん空ける
+  const BG_BOTTOM = 200;     // 会話ウィンドウのぶん空ける
+  let currentBg = null;
+
+  function layoutBg(id, posOverride) {
+    const def = D.backgrounds[id] || D.backgrounds.black;
+    const el = $("bg");
+    const pos = posOverride || def.pos || "center";
+    if (def.image && def.zoom && imgSize[def.image] && el.dataset.src === def.image && isPortrait()) {
+      frame(el, def.image, def.zoom, pos, (h, ch) => Math.max(BG_TOP_MIN, (ch - BG_BOTTOM - h) / 2));
+    } else {
+      unframe(el, def.fit || "cover", pos);
+    }
+  }
+
+  function setBg(id) {
+    const def = D.backgrounds[id] || D.backgrounds.black;
+    currentBg = id;
+    paint($("bg"), def, $("bg-label"), def.label, () => layoutBg(id));
+  }
+
+  // 入店の演出：背景を from の位置から、ふだんの位置（def.pos）まで動かす（終わるまで待つ）
+  // - パソコン：ms ミリ秒かけてゆっくり横に流す
+  // - スマホ縦、または端末の「動きを減らす」設定がオン：from を1.2秒見せて、0.4秒で暗く → 位置を切り替え → 0.4秒で明るく
+  // - 途中で画面をタップしたら、すぐふだんの位置にして終わる
+  // 画像が読み込めないときは動かさずに、ふだんの位置で止まった状態にする
+  async function panBg(id, from, ms) {
     const def = D.backgrounds[id];
     setBg(id);
     const el = $("bg");
+    const pic = el.querySelector(".pic");
     if (!def.image) return;
-    // 読み込みを待つ（回線が遅いときは4秒まで。それを過ぎたら流さない）
+    // 読み込みを待つ（回線が遅いときは4秒まで。それを過ぎたら動かさない）
     const loaded = await Promise.race([loadImageP(def.image), sleep(4000).then(() => false)]);
-    if (!loaded) return;
-    el.style.transition = "none";
-    el.style.backgroundPosition = from;
-    void el.offsetWidth; // いったん from の位置で描いてから流し始める
-    el.style.transition = `background-position ${ms}ms ease-in-out`;
-    el.style.backgroundPosition = to;
-    await sleep(ms);
+    if (!loaded || currentBg !== id) return;
+
+    let skipped = false;
+    const skip = new Promise((resolve) => { onAdvance = () => { skipped = true; resolve(); }; });
+    const wait = (t) => (skipped ? Promise.resolve() : Promise.race([sleep(t), skip]));
+    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (isPortrait() || reduceMotion) {
+      layoutBg(id, from);
+      await wait(1200);
+      if (!skipped) {
+        el.style.transition = "opacity 0.4s";
+        el.style.opacity = "0";
+        await wait(400);
+      }
+      layoutBg(id);
+      if (!skipped) {
+        el.style.opacity = "1";
+        await wait(400);
+      }
+    } else {
+      pic.style.transition = "none";
+      layoutBg(id, from);
+      void pic.offsetWidth; // いったん from の位置で描いてから流し始める
+      pic.style.transition = `background-position ${ms}ms ease-in-out`;
+      layoutBg(id);
+      await wait(ms);
+    }
+    // 終わり（タップで飛ばしたときも、ここでふだんの位置・明るさにそろえる）
+    onAdvance = null;
+    pic.style.transition = "";
     el.style.transition = "";
+    el.style.opacity = "";
+    layoutBg(id);
   }
 
   // 会話ウィンドウのすぐ上に出す看板（「本日のおすすめ」など）
@@ -161,33 +250,22 @@ const UI = (() => {
   function showCg(id) {
     const def = D.cgs[id];
     currentCg = id;
-    paint($("cg"), def, $("cg-caption"), def.caption, { fit: "contain", pos: `center ${CG_TOP * 100}%` });
+    paint($("cg"), def, $("cg-caption"), def.caption, () => layoutCg(id));
     $("cg").classList.add("show");
-    if (def.zoom && def.image) loadImage(def.image, () => layoutCg(id));
   }
 
   // スマホ縦（画面が縦長）のときだけ、zoom 倍に拡大して、pos の位置が画面の真ん中に来るように置く（左右の端は切れる）
   // パソコン（横長の画面）では何もしない（切らずに全体表示のまま）
+  // スマホ縦のときは、まわりの余白をぼかしで埋める
   function layoutCg(id) {
     const def = D.cgs[id];
     const el = $("cg");
-    if (currentCg !== id || el.dataset.src !== def.image) return;
-    const size = imgSize[def.image];
-    const cw = el.clientWidth;
-    const ch = el.clientHeight;
-    // 「スマホ縦」＝高さが幅の1.3倍より大きいとき（パソコンはゲーム画面の幅に上限があるので、ほぼ正方形になる）
-    if (!size || ch <= cw * PORTRAIT_RATIO) {
-      el.style.backgroundSize = "contain";
-      el.style.backgroundPosition = `center ${CG_TOP * 100}%`;
-      return;
+    if (currentCg !== id) return;
+    if (def.zoom && def.image && imgSize[def.image] && el.dataset.src === def.image && isPortrait()) {
+      frame(el, def.image, def.zoom, def.pos, (h, ch) => (ch - h) * CG_TOP);
+    } else {
+      unframe(el, def.fit || "contain", def.fit === "cover" ? "center" : `center ${CG_TOP * 100}%`);
     }
-    const w = cw * def.zoom;
-    const h = w * size.h / size.w;
-    const center = parseFloat(def.pos || "50") / 100;
-    const x = Math.min(0, Math.max(cw - w, cw / 2 - w * center)); // 絵の端より外は見せない
-    const y = (ch - h) * CG_TOP;
-    el.style.backgroundSize = `${w}px ${h}px`;
-    el.style.backgroundPosition = `${x}px ${y}px`;
   }
 
   function hideCg() {
@@ -270,8 +348,11 @@ const UI = (() => {
     logEntries.length = 0;
   }
 
+  // 会話中だけ出すボタン（早送り、スレを遡る）
   function showLogButton(show) {
     $("log-btn").classList.toggle("hidden", !show);
+    $("ff-btn").classList.toggle("hidden", !show);
+    if (!show) setFastForward(false);
   }
 
   function isLogOpen() {
@@ -324,10 +405,26 @@ const UI = (() => {
 
   // セリフを一文字ずつ出し、クリックを待つ
   // face を書くと、その1行だけその表情になる
+  // 早送り：オンの間は、一度読んだ会話を自動でどんどん進める（まだ読んでいない会話と、選択肢では止まる）
+  const FF_WAIT = 150;     // 早送りで、読んだ会話を次へ進めるまでの間（ミリ秒）
+  let fastForward = false;
+  let lineWaitingRead = false; // 今クリック待ちの会話が、読んだことのある会話か
+
+  function setFastForward(on) {
+    fastForward = on;
+    const b = $("ff-btn");
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    // クリック待ちの会話が読んだことのあるものなら、すぐ進める
+    if (on && lineWaitingRead && onAdvance) onAdvance();
+  }
+
   async function say(who, text, face) {
     const msg = $("msg");
     const body = $("text");
     const c = who && D.characters[who];
+    const key = Game.lineKey(who, text);
+    const wasRead = Game.isRead(key);
     $("speaker").textContent = c ? fillName(c.name) : "";
     setFace(who, face);
     msg.classList.remove("hidden");
@@ -337,7 +434,7 @@ const UI = (() => {
     const full = fillName(text);
     addLog({ who: c ? who : null, face, name: c ? fillName(c.name) : "", text: full });
     let shown = 0;
-    let skip = false;
+    let skip = fastForward && wasRead; // 早送り中の読んだ会話は、一文字ずつ出さずに全部出す
     body.textContent = "";
 
     await new Promise((resolve) => {
@@ -354,12 +451,18 @@ const UI = (() => {
     });
 
     msg.classList.add("waiting");
+    lineWaitingRead = wasRead;
     await new Promise((resolve) => {
+      let timer = null;
       onAdvance = () => {
+        clearTimeout(timer);
         onAdvance = null;
         resolve();
       };
+      if (fastForward && wasRead) timer = setTimeout(() => { if (onAdvance) onAdvance(); }, FF_WAIT);
     });
+    lineWaitingRead = false;
+    Game.markRead(key);
     msg.classList.remove("waiting");
   }
 
@@ -443,12 +546,21 @@ const UI = (() => {
   function init() {
     preload();
     // 画面の向きや大きさが変わったら、一枚絵を置き直す
-    window.addEventListener("resize", () => { if (currentCg) layoutCg(currentCg); });
+    window.addEventListener("resize", () => {
+      if (currentBg) layoutBg(currentBg);
+      if (currentCg) layoutCg(currentCg);
+    });
     const advance = () => { if (onAdvance && !isLogOpen()) onAdvance(); };
     $("game").addEventListener("click", advance);
 
     // ログを開いている間は、会話が進まないようにクリックを止める
     $("log-btn").addEventListener("click", (e) => { e.stopPropagation(); openLog(); });
+
+    // 早送りのオン・オフ
+    $("ff-btn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      setFastForward(!fastForward);
+    });
 
     // 音のオン・オフ（設定はセーブとは別にブラウザに覚えておく）
     const soundBtn = $("sound-btn");

@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>空挺（仮題）</title>
-  <link rel="stylesheet" href="css/style.css?v=20260926h">
+  <link rel="stylesheet" href="css/style.css?v=20260926i">
 </head>
 <body>
   <div id="game">
     <!-- 背景 -->
-    <div id="bg"><span id="bg-label"></span></div>
+    <div id="bg"><div class="fill"></div><div class="pic"></div><span id="bg-label"></span></div>
     <!-- 背景の上に置く画面（タイトル・地図・空挺など） -->
     <div id="stage"></div>
     <!-- 一枚絵 -->
-    <div id="cg"><span id="cg-caption"></span></div>
+    <div id="cg"><div class="fill"></div><div class="pic"></div><span id="cg-caption"></span></div>
 
     <!-- 下のウィンドウ（選択肢・入力・会話） -->
     <div id="bottom">
@@ -34,9 +34,10 @@
     </div>
 
     <!-- ログ（スレを遡る） -->
-    <!-- 右上のボタン（音のオン・オフ、スレを遡る） -->
+    <!-- 右上のボタン（音のオン・オフ、早送り、スレを遡る） -->
     <div id="top-btns">
       <button id="sound-btn" type="button" aria-pressed="true">♪ 音：オン</button>
+      <button id="ff-btn" class="hidden" type="button" aria-pressed="false">▶▶ 早送り</button>
       <button id="log-btn" class="hidden" type="button">スレを遡る</button>
     </div>
     <div id="log" class="hidden">
@@ -52,15 +53,15 @@
   </div>
 
   <!-- 中身（データ） -->
-  <script src="data/characters.js?v=20260926h"></script>
-  <script src="data/world.js?v=20260926h"></script>
-  <script src="data/scenario.js?v=20260926h"></script>
+  <script src="data/characters.js?v=20260926i"></script>
+  <script src="data/world.js?v=20260926i"></script>
+  <script src="data/scenario.js?v=20260926i"></script>
   <!-- プログラム -->
-  <script src="js/state.js?v=20260926h"></script>
-  <script src="js/ui.js?v=20260926h"></script>
-  <script src="js/engine.js?v=20260926h"></script>
-  <script src="js/bgm.js?v=20260926h"></script>
-  <script src="js/scenes.js?v=20260926h"></script>
-  <script src="js/main.js?v=20260926h"></script>
+  <script src="js/state.js?v=20260926i"></script>
+  <script src="js/ui.js?v=20260926i"></script>
+  <script src="js/engine.js?v=20260926i"></script>
+  <script src="js/bgm.js?v=20260926i"></script>
+  <script src="js/scenes.js?v=20260926i"></script>
+  <script src="js/main.js?v=20260926i"></script>
 </body>
 </html>
