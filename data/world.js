@@ -14,8 +14,12 @@ GAME_DATA.backgrounds = {
   ruins:     { color: "#2a2724", label: "廃墟の街", image: "assets/bg/bg_haikyo.jpg", zoom: 1.6 },
   map:       { color: "#1b2330", label: "", image: null },
   base:      { color: "#232a2e", label: "格納庫", image: "assets/bg/bg_base.jpg", zoom: 1.6 },
-  // 駅以外の町の場面は、絵ができるまでこの仮の色を使う
+  // 絵のない町の場面を足したときに使う仮の色
   town:      { color: "#262b33", label: "町", image: null },
+  // 移動中の町：自販機（自販機が真ん中より右にある）／交差点／公園のベンチ
+  town_vending:  { color: "#262b33", label: "自販機", image: "assets/bg/bg_town_vending.jpg", pos: "60% center", zoom: 1.6 },
+  town_crossing: { color: "#262b33", label: "交差点", image: "assets/bg/bg_town_crossing.jpg", pos: "50% center", zoom: 1.6 },
+  town_park:     { color: "#262b33", label: "公園", image: "assets/bg/bg_town_park.jpg", pos: "50% center", zoom: 1.6 },
   // 駅のホーム。時刻表の掲示板が真ん中より右にあるので、それが残るように右寄せ
   town_station: { color: "#262b33", label: "駅のホーム", image: "assets/bg/bg_town_station.jpg", pos: "62% center", zoom: 1.6 },
   // 社長室。壁の額縁は空飛ぶ戦艦の設計図。社訓「UNKOからKOUNへ」の額縁は絵に映っていない別の壁にある
@@ -25,7 +29,8 @@ GAME_DATA.backgrounds = {
   // バーの絵には視火がすでに描いてある。バーの場面で視火の全身を上に重ねない
   // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ。
   // スマホ縦の zoom だけ例外で大きめ（視火が大きすぎず、顔が切れない大きさ）
-  bar:       { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_wide.jpg", pos: "78% center", zoom: 2.6 },
+  // signZoom … スマホ縦の入店演出で、最初に左端の看板を見せるときだけの大きさ（看板「焼け野原にネオン」が全部入る）
+  bar:       { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_wide.jpg", pos: "78% center", zoom: 2.6, signZoom: 1.7 },
   // 隠し欠片「心の傷」の場面専用（看板に「本日のおすすめ 心の傷に、強めの一杯を。」）。今は使わない
   bar_secret: { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_square.jpg", zoom: 1.0 } // 正方形の絵なので横幅いっぱい
 };

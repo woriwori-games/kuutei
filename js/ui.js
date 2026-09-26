@@ -74,7 +74,8 @@ const UI = (() => {
     const faceList = (id) => Object.values(D.characters[id].faces || {});
     const firstFaces = [...faceList("player"), ...faceList("aibou")];
     // 目覚めの一枚絵、カプセルの背景、廃墟の背景も最初のグループに入れる
-    const firstBgs = [D.cgs.wake.image, D.backgrounds.capsule.image, D.backgrounds.ruins.image];
+    // 相棒の全身（目覚めのあとの紹介カット）はカプセルの背景と一緒に
+    const firstBgs = [D.cgs.wake.image, D.backgrounds.capsule.image, D.characters.aibou.body, D.backgrounds.ruins.image];
     const first = [...firstFaces, ...firstBgs];
     // 顔と目覚めの一枚絵を真っ先に（目覚めの暗転中に待つのはここまで）。そのあと背景（カプセル → 廃墟の順）
     firstReady = Promise.all([...firstFaces, D.cgs.wake.image].map(loadImageP));
@@ -86,8 +87,11 @@ const UI = (() => {
       if (id !== "player" && id !== "aibou") rest.push(...faceList(id));
     }
     for (const id in D.backgrounds) if (D.backgrounds[id].image) rest.push(D.backgrounds[id].image);
+    // 紹介カットの全身（KOUN・美術室の背景と一緒に。そのほかのキャラはそのあと）
+    for (const id of ["opa", "yamada"]) rest.push(D.characters[id].body);
+    for (const id in D.characters) if (D.characters[id].body) rest.push(D.characters[id].body);
     for (const id in D.cgs) if (D.cgs[id].image) rest.push(D.cgs[id].image);
-    await Promise.all(rest.filter((src) => !first.includes(src)).map(loadImageP));
+    await Promise.all([...new Set(rest)].filter((src) => !first.includes(src)).map(loadImageP));
   }
 
   // 最初に出る顔（player と aibou）と目覚めの一枚絵の読み込みを、最大 ms ミリ秒だけ待つ
@@ -165,12 +169,14 @@ const UI = (() => {
   const BG_BOTTOM = 200;     // 会話ウィンドウのぶん空ける
   let currentBg = null;
 
-  function layoutBg(id, posOverride) {
+  // zoomOverride … その大きさで置く（入店の看板を見せるとき。パソコンでも同じ置き方にする）
+  function layoutBg(id, posOverride, zoomOverride) {
     const def = D.backgrounds[id] || D.backgrounds.black;
     const el = $("bg");
     const pos = posOverride || def.pos || "center";
-    if (def.image && def.zoom && imgSize[def.image] && el.dataset.src === def.image && isPortrait()) {
-      frame(el, def.image, def.zoom, pos, (h, ch) => Math.max(BG_TOP_MIN, (ch - BG_BOTTOM - h) / 2));
+    const zoom = zoomOverride || def.zoom;
+    if (def.image && zoom && imgSize[def.image] && el.dataset.src === def.image && (zoomOverride || isPortrait())) {
+      frame(el, def.image, zoom, pos, (h, ch) => Math.max(BG_TOP_MIN, (ch - BG_BOTTOM - h) / 2));
     } else {
       unframe(el, def.fit || "cover", pos);
     }
@@ -185,6 +191,7 @@ const UI = (() => {
   // 入店の演出：背景を from の位置から、ふだんの位置（def.pos）まで動かす（終わるまで待つ）
   // - パソコン：ms ミリ秒かけてゆっくり横に流す
   // - スマホ縦、または端末の「動きを減らす」設定がオン：from を1.2秒見せて、0.4秒で暗く → 位置を切り替え → 0.4秒で明るく
+  //   from を見せる間だけ、背景の signZoom の大きさにする（看板が全部入るように）
   // - 途中で画面をタップしたら、すぐふだんの位置にして終わる
   // 画像が読み込めないときは動かさずに、ふだんの位置で止まった状態にする
   async function panBg(id, from, ms) {
@@ -203,7 +210,7 @@ const UI = (() => {
     const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (isPortrait() || reduceMotion) {
-      layoutBg(id, from);
+      layoutBg(id, from, def.signZoom);
       await wait(1200);
       if (!skipped) {
         el.style.transition = "opacity 0.4s";
@@ -229,6 +236,43 @@ const UI = (() => {
     el.style.transition = "";
     el.style.opacity = "";
     layoutBg(id);
+  }
+
+  // ---------- 初登場の紹介カット ----------
+  // キャラに初めて会ったとき、背景の上に全身の絵をふわっと出して、名前を添える
+  // - 0.4秒で出す → 2.5秒見せる → 0.4秒で消す。タップ（早送りがオンのときも）ですぐ消す
+  // - 全身の絵が読み込めていなければ最大1秒待つ。それでもだめなら出さない
+  // 出せたら true、出せなかったら false を返す
+  const INTRO_FADE = 400;
+  const INTRO_SHOW = 2500;
+  const INTRO_WAIT_LOAD = 1000;
+  let introShowing = false;
+
+  async function showIntro(id) {
+    const c = D.characters[id];
+    if (!c || !c.body) return false;
+    const loaded = await Promise.race([loadImageP(c.body), sleep(INTRO_WAIT_LOAD).then(() => false)]);
+    if (!loaded) return false;
+    const el = $("intro");
+    el.querySelector("img").src = c.body;
+    el.querySelector(".intro-name").textContent = fillName(c.name);
+    el.classList.toggle("portrait", isPortrait());
+    hideMsg();
+    el.classList.remove("hidden");
+    void el.offsetWidth;
+    el.classList.add("show");
+    let skipped = false;
+    const skip = new Promise((resolve) => { onAdvance = () => { skipped = true; resolve(); }; });
+    const wait = (t) => (skipped ? Promise.resolve() : Promise.race([sleep(t), skip]));
+    introShowing = true;
+    if (fastForward) onAdvance();
+    await wait(INTRO_FADE + INTRO_SHOW);
+    el.classList.remove("show");
+    await wait(INTRO_FADE);
+    introShowing = false;
+    onAdvance = null;
+    el.classList.add("hidden");
+    return true;
   }
 
   // 会話ウィンドウのすぐ上に出す看板（「本日のおすすめ」など）
@@ -416,7 +460,8 @@ const UI = (() => {
     b.classList.toggle("on", on);
     b.setAttribute("aria-pressed", on ? "true" : "false");
     // クリック待ちの会話が読んだことのあるものなら、すぐ進める
-    if (on && lineWaitingRead && onAdvance) onAdvance();
+    // 紹介カットの途中なら、すぐ消す
+    if (on && (lineWaitingRead || introShowing) && onAdvance) onAdvance();
   }
 
   async function say(who, text, face) {
@@ -596,7 +641,7 @@ const UI = (() => {
   }
 
   return {
-    sleep, fillName, waitFirstImages, setBg, panBg, showSign, hideSign, showCg, hideCg, flash, shake, toast,
+    sleep, fillName, waitFirstImages, setBg, panBg, showIntro, showSign, hideSign, showCg, hideCg, flash, shake, toast,
     say, hideMsg, choose, input, setStage, waitButtons, init,
     clearLog, showLogButton
   };

@@ -6,6 +6,10 @@ async function play(steps, ctx = {}) {
     if (s.bg) UI.setBg(s.bg);
     if (s.cg) UI.showCg(s.cg);
     if (s.flash) UI.flash();
+    // 初登場の紹介カット（一度出したキャラは出さない。出せなかったときは「出した」ことにしない）
+    if (s.intro && !Game.state.introduced[s.intro]) {
+      if (await UI.showIntro(s.intro)) Game.state.introduced[s.intro] = true;
+    }
     if (s.wait) {
       UI.hideMsg();
       await UI.sleep(s.wait);

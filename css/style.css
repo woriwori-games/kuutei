@@ -81,6 +81,49 @@ html, body {
   font-size: 1.3rem;
 }
 
+/* ---------- 初登場の紹介カット ---------- */
+#intro {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#intro.show { opacity: 1; }
+.intro-wrap {
+  position: relative;
+  height: 80%;              /* パソコン：画面の縦の8割 */
+  display: flex;
+  justify-content: center;
+}
+#intro.portrait .intro-wrap {
+  height: 60%;              /* スマホ縦：画面の縦の6割 */
+  margin-bottom: 12%;       /* 少し上寄り */
+}
+.intro-wrap img {
+  height: 100%;
+  width: auto;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.6));
+}
+.intro-name {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 18px;
+  white-space: nowrap;
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+}
+
 /* ---------- 背景の上の画面 ---------- */
 #stage {
   position: absolute;

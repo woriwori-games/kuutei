@@ -16,7 +16,8 @@ function newState() {
     talks: {},                   // キャラごとの話しかけ回数 { opa: 2, mama: 1, yamada: 4 }（yamada は「山田と話す」を選んだ合計。伝える会話の回は数えない）
     choices: {},                 // 選んだ答えの記録 { koun0412_reading: "ureshii" }
     flags: {},                   // できごとの記録 { metOpa: true }
-    read: {}                     // 読んだ会話の印（早送りで使う）。会話1行ごとの短い印 → 1
+    read: {},                    // 読んだ会話の印（早送りで使う）。会話1行ごとの短い印 → 1
+    introduced: {}               // 紹介カットを出したキャラ { aibou: true }
   };
 }
 
