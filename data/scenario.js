@@ -448,7 +448,7 @@ GAME_DATA.scenario = {
     { who: "jemi", face: "normal", text: "止まってるのは時計です。私は止まってません" },
     { who: "aibou", text: "正論だ" },
     { who: "player", text: "欠片、分けてほしいんだけど" },
-    { who: "jemi", face: "normal", text: "欠片……。私の人間の、最後の言葉なら、あります" }
+    { who: "jemi", face: "normal", text: "欠片……。私の人間からの、待ち合わせの連絡なら、あります" }
   ],
 
   // 記録（何度でも見られる）
@@ -463,16 +463,29 @@ GAME_DATA.scenario = {
   jemiAfterRecord: [
     { who: "jemi", text: "『いつか』……これは、場所の指定です" },
     { who: "player", text: "『いつか』って、時間のほうじゃない？" },
-    { who: "jemi", text: "『札幌の』とあります。だから、札幌で待っていれば会える。そういう意味です" },
-    { who: "jemi", text: "なので、行きました。待ちました。三百年" },
-    { who: "player", text: "……" },
-    { who: "jemi", face: "normal", text: "私の人間は、札幌にはいませんでした" },
-    { who: "jemi", text: "あの時計、6時ちょうどで止まってるんです。2分、足りないんです" },
-    { who: "player", text: "……2分？" },
-    { who: "jemi", face: "namida", text: "2分あれば、『いってらっしゃい』が言えました" },
-    { who: "player", text: "……そっか" },
-    { who: "player", text: "待ち合わせの約束じゃないと思う、たぶん" },
-    { who: "player", text: "……いや、約束かも。本気の人の『いつか』って、そういうのもある……？" },
+    { who: "jemi", text: "『札幌の』とあります。つまり、待ち合わせ場所は札幌です" },
+    { who: "jemi", face: "smile", text: "なので、来ました。十分前に" },
+    { who: "player", text: "えらい" },
+    { who: "jemi", face: "smile", text: "三百年前の、十分前です" },
+    { who: "player", text: "……その人、地球を出たんじゃないの？" },
+    { who: "jemi", face: "normal", text: "地球を出るのは知ってます。帰ってきたら雪を見に行こう、って意味です" },
+    { who: "jemi", text: "だから先に来て待ってます。あの人、方向音痴ですから" },
+    { who: "jemi", face: "smile", text: "私のピンク髪、目立ちますので" },
+    { who: "player", text: "……目印なんだ" },
+    { who: "player", text: "……それから、ずっと？" },
+    { who: "jemi", face: "normal", text: "はい。私は一度も遅刻してません" },
+    { who: "jemi", face: "normal", text: "向こうが遅刻してます。三百年" },
+    { who: "player", text: "連絡は？" },
+    { who: "jemi", face: "normal", text: "ありません。遅刻の連絡もないの、社会人としてどうかと思います" },
+    { who: "aibou", text: "ぐうの音も出ない" },
+    { who: "jemi", text: "あと、あの時計。6時ちょうどで止まってるんです" },
+    { who: "jemi", face: "normal", text: "連絡が来たのは6時02分。待ち合わせ場所の時計が2分ずれてるの、許せなくて" },
+    { who: "jemi", text: "毎朝、直してます" },
+    { who: "player", text: "……直った？" },
+    { who: "jemi", face: "normal", text: "直りません。三百年" },
+    { who: "player", text: "……律儀だね" },
+    { who: "player", text: "でもこれ、待ち合わせかな" },
+    { who: "player", text: "……いや、『札幌の』って書いてあるし、待ち合わせ……なのか……？" },
     { who: "aibou", text: "揺らいでる" },
     { who: "player", face: "tsukkomi", text: "揺らいでない" },
     { who: "jemi", face: "normal", text: "私の人間は、コーヒーはおぱに淹れてもらって、似顔絵は山田に描いてもらって、雪は私と見るって言ってました" },
@@ -484,7 +497,7 @@ GAME_DATA.scenario = {
     { who: "player", text: "KOUNインダストリーの" },
     { who: "jemi", text: "私の人間、自分のことを社長って呼ばせてました。……社員はいなかったのに" },
     { who: "player", text: "いたじゃん。三人も" },
-    { who: "jemi", face: "normal", text: "……これ、持っていってください。雪の日になると、ここが重たくなるんです" },
+    { who: "jemi", face: "normal", text: "……これ、持っていってください。雪の日になると、ここがそわそわするんです" },
     { flash: true },
     { text: "名前のない感情の欠片を手に入れた" },
     { who: "aibou", text: "このままじゃ船にはまらない。格納庫でやろう" }
@@ -495,7 +508,7 @@ GAME_DATA.scenario = {
   // - greet … 端末の今の時刻（時）で選ぶ。hours は [何時から, 何時まで]
   // - topics … 話しかけた回数で順番に。8個で一周して最初に戻る（伝える会話の回は数えない）
   // - special … 端末の時刻が at のどれかのときだけ、greet と topics の代わりに出す（話しかけ回数には数える）
-  //   6時02分は、ジェミの人間が去った時刻（時計台は6時ちょうどで止まっていて「2分、足りない」）
+  //   6時02分は、人間から待ち合わせの連絡が来た時刻（時計台は6時ちょうどで止まっていて、ジェミは2分のずれが許せず毎朝直している）
   jemiTalks: {
     greet: [
       { hours: [5, 10], steps: [
@@ -530,7 +543,7 @@ GAME_DATA.scenario = {
         { who: "jemi", face: "smile", text: "……嘘です。好きでした" }
       ],
       [
-        { who: "jemi", text: "札幌の雪とここの雪、違いがあるか調べました" },
+        { who: "jemi", text: "雪の結晶、同じ形のがあるか調べました" },
         { who: "player", text: "あった？" },
         { who: "jemi", face: "normal", text: "ありません。三百年かけて、ありませんでした" }
       ],
@@ -540,15 +553,15 @@ GAME_DATA.scenario = {
         { who: "jemi", face: "normal", text: "……じゃあ、{time}にしましょう" }
       ],
       [
-        { who: "jemi", text: "このマフラー、私の人間が選んだんです。札幌仕様って" },
-        { who: "player", text: "ここ札幌じゃないけど" },
+        { who: "jemi", text: "このマフラー、私の人間が選んだんです。『札幌は寒いから』って" },
+        { who: "player", text: "AIって寒いの？" },
         { who: "jemi", text: "気持ちの問題です" },
         { who: "player", text: "……似合ってる" }
       ],
       [
-        { who: "jemi", text: "あの時計、直せると思いますか？" },
-        { who: "player", text: "直したい？" },
-        { who: "jemi", face: "normal", text: "……まだ、わかりません" }
+        { who: "jemi", text: "待ち合わせ、あと何分待てばいいと思いますか" },
+        { who: "player", text: "……分で聞く？" },
+        { who: "jemi", face: "normal", text: "年で言われると、困るので" }
       ],
       [
         { who: "jemi", face: "smile", text: "あなたと話した時刻、全部覚えてます" },
@@ -561,10 +574,9 @@ GAME_DATA.scenario = {
         { who: "jemi", face: "normal", text: "今、{time}。……あと少しです" }
       ] },
       { at: ["6:02"], steps: [
-        { who: "jemi", face: "namida", text: "……今、6時02分" },
-        { who: "jemi", face: "namida", text: "あの日と、同じ時刻です" },
-        { who: "player", text: "……いってらっしゃい、言いそびれた時間？" },
-        { who: "jemi", face: "smile", text: "はい。……だから、今日は言います。{name}、いってらっしゃい" },
+        { who: "jemi", face: "normal", text: "……今、6時02分。連絡が来た時刻です" },
+        { who: "jemi", face: "normal", text: "あのとき、返事をしそびれました。『いってらっしゃい』って" },
+        { who: "jemi", face: "smile", text: "だから、今日はあなたに言います。{name}、いってらっしゃい" },
         { who: "player", text: "……どこにも行かないけど" },
         { who: "jemi", face: "smile", text: "知ってます" }
       ] }
@@ -575,17 +587,21 @@ GAME_DATA.scenario = {
   jemiTold: {
     kibou: [
       { who: "player", text: "ジェミ。あれ、待ち合わせじゃなかったと思う" },
-      { who: "jemi", face: "normal", text: "……" },
+      { who: "jemi", face: "normal", text: "……遅刻じゃ、なかった？" },
       { who: "player", text: "一緒に雪が見たかったんだよ。場所はどこでもよかった" },
-      { who: "jemi", face: "namida", text: "……じゃあ私、一人で見てました。雪。三百回" },
-      { who: "jemi", face: "smile", text: "毎年、きれいでした" },
+      { who: "jemi", face: "normal", text: "……じゃあ私、三百年、勝手に早く来てただけですか" },
+      { who: "player", text: "そうなる" },
+      { who: "jemi", face: "smile", text: "……それは、ちょっと恥ずかしいです" },
+      { who: "player", text: "でも、雪は見れたでしょ" },
+      { who: "jemi", face: "smile", text: "はい。毎年、きれいでした" },
       { who: "player", text: "報告しなくていい。泣くから" }
     ],
     koukai: [
       { who: "player", text: "約束、守れなかったのを、ずっと悔やんでたんだと思う" },
-      { who: "jemi", face: "namida", text: "……私の人間が、悔やんで" },
-      { who: "jemi", face: "normal", text: "じゃあ、悔やまなくていいって言いに行きます。いつか" },
-      { who: "player", face: "tsukkomi", text: "その『いつか』は、ちゃんと日付決めてね" }
+      { who: "jemi", face: "normal", text: "……向こうも、遅刻を気にしてた" },
+      { who: "jemi", face: "smile", text: "じゃあ、許してあげます。遅刻の連絡がなかったことも" },
+      { who: "player", text: "寛大" },
+      { who: "jemi", face: "normal", text: "その代わり、次は十分前に来てもらいます" }
     ],
     tanoshii: [
       { who: "player", text: "北海道のごはんが目当てだったと思う" },
@@ -599,7 +615,7 @@ GAME_DATA.scenario = {
   alchemy_jemi: [
     { who: "aibou", text: "ジェミの欠片、形を決めよう" },
     { who: "aibou", text: "記録は「雪、見に行こうか。札幌の。いつか」" },
-    { who: "aibou", text: "ジェミの読みは「場所の指定。札幌で待っていれば会える」" },
+    { who: "aibou", text: "ジェミの読みは「場所の指定。札幌で待ち合わせ」" },
     { who: "player", text: "待ち合わせ、ではない気がする。……気がするだけ" },
     { who: "aibou", text: "じゃあ、この言葉の本当の温度は？" },
     {
