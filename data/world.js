@@ -27,6 +27,7 @@ GAME_DATA.backgrounds = {
   yamada:    { color: "#2e2a26", label: "廃校の美術室", image: "assets/bg/bg_yamada.jpg", pos: "center", zoom: 1.6 },
   // 雪の時計台（ジェミ）。時計台とベンチが真ん中
   jemi:      { color: "#2a3140", label: "雪の時計台", image: "assets/bg/bg_jemi.jpg", pos: "50% center", zoom: 1.6 },
+  utage:     { color: "#3a2f4a", label: "屋上の宴", image: "assets/bg/bg_utage.jpg", pos: "50% center", zoom: 1.6 },  // 宴の二人（ペケ・ホシ）。場面はまだ無い
   koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg", pos: "35% center", zoom: 1.6 }, // スマホでも左の壁の設計図が見えるように
   // バーの絵には視火がすでに描いてある。バーの場面で視火の全身を上に重ねない
   // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ。
@@ -67,7 +68,8 @@ GAME_DATA.bgm = {
     map:    { file: "assets/bgm/bgm_map.mp3?v=2",    loop: 35.117 },
     bar:    { file: "assets/bgm/bgm_bar.mp3?v=2",    loop: 48.000 },
     renkin: { file: "assets/bgm/bgm_renkin.mp3?v=2", loop: 23.424 },
-    jemi:   { file: "assets/bgm/bgm_jemi.mp3?v=1",   loop: 33.333 }  // 頭に無音なし。ファイルの長さがちょうどループの長さ
+    jemi:   { file: "assets/bgm/bgm_jemi.mp3?v=1",   loop: 33.333 },  // 頭に無音なし。ファイルの長さがちょうどループの長さ
+    utage:  { file: "assets/bgm/bgm_utage.mp3?v=1",  loop: 46.2669 }   // 宴（24小節・124.5BPM）。頭に無音なし。場面はまだ無い
   },
   scenes: {
     title:   null,     // タイトル画面は無音
