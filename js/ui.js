@@ -63,17 +63,19 @@ const UI = (() => {
     return new Promise((resolve) => loadImage(src, () => resolve(true), () => resolve(false)));
   }
 
-  // 使う画像を先に読み込んでおく。最初に出る player と aibou の顔、廃墟の背景を先に。
+  // 使う画像を先に読み込んでおく。最初に出る player と aibou の顔、カプセルと廃墟の背景を先に。
   // それが終わってから、残りのキャラと背景
   let firstReady = Promise.resolve();
   async function preload() {
     const faceList = (id) => Object.values(D.characters[id].faces || {});
     const firstFaces = [...faceList("player"), ...faceList("aibou")];
-    const first = [...firstFaces, D.backgrounds.ruins.image];
-    // 顔を真っ先に。回線を取り合わないように、背景は顔のあと
+    // 目覚めの最初に出るカプセルの背景と、廃墟の背景も最初のグループに入れる
+    const firstBgs = [D.backgrounds.capsule.image, D.backgrounds.ruins.image];
+    const first = [...firstFaces, ...firstBgs];
+    // 顔を真っ先に。回線を取り合わないように、背景は顔のあと（カプセル → 廃墟の順）
     firstReady = Promise.all(firstFaces.map(loadImageP));
     await firstReady;
-    await loadImageP(D.backgrounds.ruins.image);
+    for (const src of firstBgs) await loadImageP(src);
 
     const rest = [];
     for (const id in D.characters) {

@@ -428,7 +428,7 @@ GAME_DATA.scenario = {
 // 増やすときは random に [ ... ] を一つ足すだけでいい。笑えるのと少し寂しいのを混ぜる。
 GAME_DATA.townScenes = {
   first: [
-    { bg: "town" },
+    { bg: "town_station" },
     { text: "（駅のホーム。案内係のAIが、時刻表を貼り替えている）" },
     { who: "townAI", text: "本日も、定刻どおり運行しております" },
     { who: "player", text: "……来てないよね？" },
