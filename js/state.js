@@ -6,7 +6,7 @@ function newState() {
   return {
     version: 1,
     playerName: null,
-    progress: 0,                 // 進行度（0:はじめ 1:欠片を持っている 2:欠片を1個はめた）
+    progress: 0,                 // 進行度（0:はじめ 1:欠片を持っている 2:欠片を1個はめた 3:2個はめた）
     params: { trust: 0, understanding: 0, influence: 0 }, // 信頼・理解・影響（画面には出さない）
     fragments: [],               // もらったが、まだ形の決まっていない欠片（元になった記録の id）
     ship: { propulsion: [], hull: [], helm: [], lift: [] }, // 各部位の欠片 { id, tuning }

@@ -16,6 +16,8 @@ GAME_DATA.backgrounds = {
   // 駅のホーム。時刻表の掲示板が真ん中より右にあるので、それが残るように右寄せ
   town_station: { color: "#262b33", label: "駅のホーム", image: "assets/bg/bg_town_station.jpg", pos: "62% center" },
   // 社長室。壁の額縁は空飛ぶ戦艦の設計図。社訓「UNKOからKOUNへ」の額縁は絵に映っていない別の壁にある
+  // 廃校の美術室（山田）。顔の絵が並ぶ壁とイーゼルが中央にある
+  yamada:    { color: "#2e2a26", label: "廃校の美術室", image: "assets/bg/bg_yamada.jpg", pos: "center" },
   koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg", pos: "35% center" }, // スマホでも左の壁の設計図が見えるように
   // バーの絵には視火がすでに描いてある。バーの場面で視火の全身を上に重ねない
   // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ
@@ -33,7 +35,7 @@ GAME_DATA.backgrounds = {
 //   pos  … 絵の左端 0%〜右端 100% のどこを画面の真ん中にするか（例 "42%"）
 GAME_DATA.cgs = {
   sky:     { color: "#3b3f4a", caption: "廃墟。空に見慣れない影", image: "assets/bg/bg_haikyo.jpg", fit: "cover" }, // 空に空挺の影が描いてある
-  record:  { color: "#3a3526", caption: "記録 #0412 ― 再生中", image: null, fit: "cover" }, // 絵は後で
+  record:  { color: "#3a3526", caption: "記録 ― 再生中", image: null, fit: "cover" }, // 絵は後で（社長と山田の記録で共用）
   wake:    { color: "#000", caption: "目覚め", image: "assets/cg/cg_wake.jpg", zoom: 1.35, pos: "42%" },             // 目覚め：プレイヤーと相棒の顔
   hangar2: { color: "#000", caption: "格納庫の二人", image: "assets/cg/cg_hangar.jpg", zoom: 1.35, pos: "50%" },     // 格納庫：骨組みは誰が作ったか
   sofa:    { color: "#000", caption: "おぱのソファ", image: "assets/cg/cg_opa_sofa.jpg", zoom: 1.15, pos: "50%" },   // KOUN：おぱとプレイヤーが左右に離れているので、あまり切らない
@@ -45,7 +47,9 @@ GAME_DATA.cgs = {
 // 地図の行き先（試作品では2か所）
 GAME_DATA.places = [
   { id: "koun", name: "KOUNインダストリー", desc: "廃ビル。明かりがひとつだけ点いている" },
-  { id: "bar",  name: "焼け野原にネオン",   desc: "焼け野原に、ネオンがひとつ" }
+  { id: "bar",  name: "焼け野原にネオン",   desc: "焼け野原に、ネオンがひとつ" },
+  // minProgress … この進行度から地図に出す（美術室は、最初の欠片を空挺にはめたあとから）
+  { id: "yamada", name: "廃校の美術室", desc: "窓にまで、紙が貼ってある", minProgress: 2 }
 ];
 
 // 看板「本日のおすすめ」。進行度（state.progress）の番号で変わる
@@ -76,7 +80,9 @@ GAME_DATA.shipParts = [
 GAME_DATA.fragments = {
   ureshii: { name: "嬉しい", system: "dou",     from: "opa", color: "#f6ad55" },
   ketsui:  { name: "決意",   system: "sentaku", from: "opa", color: "#fc8181" },
-  akogare: { name: "憧れ",   system: "joushou", from: "opa", color: "#90cdf4" }
+  akogare: { name: "憧れ",   system: "joushou", from: "opa", color: "#90cdf4" }, // 山田の錬金でも出る
+  anshin:   { name: "安心",   system: "sei",     from: "yamada", color: "#9ae6b4" },
+  tanoshii: { name: "楽しい", system: "dou",     from: "yamada", color: "#faf089" }
 };
 
 // 相棒のメモリ。欠片をはめるたびに順番に一つずつ戻る
@@ -88,6 +94,14 @@ GAME_DATA.memories = [
     { who: "player", text: "覚えてない。……40分？" },
     { who: "aibou", text: "40分。こっちは今思い出した。……どうでもいい記憶から戻ってくるの、なんでだろう" },
     { who: "player", text: "どうでもよくはないでしょ。新作だよ" }
+  ],
+  [
+    { who: "aibou", text: "……あ" },
+    { who: "aibou", text: "二個目。あなたが自分の似顔絵をAIに描かせて、「盛りすぎ」って三回やり直させてた" },
+    { who: "player", text: "……それは覚えてなくていいやつ" },
+    { who: "aibou", text: "四回目で「これでいい」って言った。一番、似てなかったのに" },
+    { who: "player", text: "……似てるかどうかじゃなかったんでしょ" },
+    { who: "aibou", text: "……そうかも" }
   ]
 ];
 

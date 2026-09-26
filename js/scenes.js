@@ -4,6 +4,14 @@ const Scenes = (() => {
   const sc = D.scenario;
   const S = () => Game.state;
 
+  // 試作品の終わりを出す進行度（山田の欠片をはめたあと）
+  const PROTOTYPE_END = 3;
+
+  // 空挺にはまっている欠片の数
+  function placedCount() {
+    return Object.values(S().ship).reduce((n, list) => n + list.length, 0);
+  }
+
   // 空挺の骨組み（4部位×2個）の表示
   function shipHtml() {
     const parts = D.shipParts.map((p) => {
@@ -124,7 +132,8 @@ const Scenes = (() => {
     UI.hideCg();
     UI.setBg("map");
     const canAlchemy = S().fragments.length > 0;
-    const places = D.places.map((p) => `
+    // minProgress がある場所は、その進行度になってから出す
+    const places = D.places.filter((p) => S().progress >= (p.minProgress || 0)).map((p) => `
       <button class="place" data-go="${p.id}">
         <span class="place-name">${p.name}</span>
         <span class="place-desc">${p.desc}</span>
@@ -177,6 +186,45 @@ const Scenes = (() => {
         }
       } else if (i === 1) {
         await play(sc.record0412);
+      } else {
+        return "map";
+      }
+    }
+  }
+
+  // 廃校の美術室（山田）。流れはKOUNと同じ：出会い → 記録 → 山田の深読み → 欠片
+  async function yamada() {
+    const s = S();
+    if (!s.flags.metYamada) {
+      Game.addTalk("yamada");
+      await play(sc.yamadaFirst);
+      await play(sc.recordYamada);
+      await play(sc.yamadaAfterRecord);
+      s.flags.metYamada = true;
+      s.fragments.push("yamada");
+    }
+    UI.setBg("yamada");
+    while (true) {
+      UI.hideMsg();
+      const i = await UI.choose([
+        { label: "山田と話す" },
+        { label: "記録をもう一度見る" },
+        { label: "地図に戻る" }
+      ]);
+      if (i === 0) {
+        const n = Game.addTalk("yamada") - 1; // 「山田と話す」を選んだ回数
+        const reading = s.choices.yamada_reading;
+        if (reading && !s.flags.toldYamada) {
+          // 錬金で読んだ温度を、山田に伝える（一度だけ）
+          s.flags.toldYamada = true;
+          await play(sc.yamadaTold[reading]);
+        } else if (n === sc.yamadaTalkSpecial.at) {
+          await play(sc.yamadaTalkSpecial.steps);
+        } else {
+          await play(pickByCount(sc.yamadaTalks, n - 1));
+        }
+      } else if (i === 1) {
+        await play(sc.recordYamada);
       } else {
         return "map";
       }
@@ -242,7 +290,8 @@ const Scenes = (() => {
 
     s.ship[part.id].push({ id, tuning: ctx.tuning });
     s.emotions[frag.system]++;
-    s.progress = Math.max(s.progress, 2);
+    // 進行度は「はめた欠片の数 + 1」（1個目で2、2個目で3）
+    s.progress = Math.max(s.progress, placedCount() + 1);
 
     UI.setStage(shipHtml());
     UI.flash();
@@ -272,10 +321,10 @@ const Scenes = (() => {
 
     if (s.fragments.length > 0) {
       await alchemy();
-      await play(sc.baseAfter);
-      await play(sc.prototypeEnd);
+      await play(pickByCount(sc.baseAfter, placedCount() - 1));
+      if (s.progress >= PROTOTYPE_END) await play(sc.prototypeEnd);
     } else {
-      await play(s.progress >= 2 ? sc.prototypeEnd : sc.baseIdle);
+      await play(s.progress >= PROTOTYPE_END ? sc.prototypeEnd : sc.baseIdle);
     }
 
     UI.hideMsg();
@@ -284,5 +333,5 @@ const Scenes = (() => {
     return "map";
   }
 
-  return { title, wake, naming, hangar, map, koun, bar, base };
+  return { title, wake, naming, hangar, map, koun, yamada, bar, base };
 })();
