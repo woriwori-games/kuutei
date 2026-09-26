@@ -63,17 +63,17 @@ const UI = (() => {
     return new Promise((resolve) => loadImage(src, () => resolve(true), () => resolve(false)));
   }
 
-  // 使う画像を先に読み込んでおく。最初に出る player と aibou の顔、カプセルと廃墟の背景を先に。
+  // 使う画像を先に読み込んでおく。最初に出る player と aibou の顔、目覚めの一枚絵、カプセルと廃墟の背景を先に。
   // それが終わってから、残りのキャラと背景
   let firstReady = Promise.resolve();
   async function preload() {
     const faceList = (id) => Object.values(D.characters[id].faces || {});
     const firstFaces = [...faceList("player"), ...faceList("aibou")];
-    // 目覚めの最初に出るカプセルの背景と、廃墟の背景も最初のグループに入れる
-    const firstBgs = [D.backgrounds.capsule.image, D.backgrounds.ruins.image];
+    // 目覚めの一枚絵、カプセルの背景、廃墟の背景も最初のグループに入れる
+    const firstBgs = [D.cgs.wake.image, D.backgrounds.capsule.image, D.backgrounds.ruins.image];
     const first = [...firstFaces, ...firstBgs];
-    // 顔を真っ先に。回線を取り合わないように、背景は顔のあと（カプセル → 廃墟の順）
-    firstReady = Promise.all(firstFaces.map(loadImageP));
+    // 顔と目覚めの一枚絵を真っ先に（目覚めの暗転中に待つのはここまで）。そのあと背景（カプセル → 廃墟の順）
+    firstReady = Promise.all([...firstFaces, D.cgs.wake.image].map(loadImageP));
     await firstReady;
     for (const src of firstBgs) await loadImageP(src);
 
@@ -86,7 +86,7 @@ const UI = (() => {
     await Promise.all(rest.filter((src) => !first.includes(src)).map(loadImageP));
   }
 
-  // 最初に出る顔（player と aibou）の読み込みを、最大 ms ミリ秒だけ待つ
+  // 最初に出る顔（player と aibou）と目覚めの一枚絵の読み込みを、最大 ms ミリ秒だけ待つ
   function waitFirstImages(ms) {
     return Promise.race([firstReady, sleep(ms)]);
   }
@@ -94,11 +94,12 @@ const UI = (() => {
   // 背景・一枚絵を塗る
   // - 画像がある場所：読み込み中は色だけ（場所の名前は出さない）。読めたら絵にする。読み直してもだめなら名前を出す
   // - 画像がない場所：色と名前
-  function paint(el, def, labelEl, labelText) {
+  function paint(el, def, labelEl, labelText, defaults = {}) {
     el.dataset.src = def.image || "";
     el.style.backgroundImage = "";
     el.style.backgroundColor = def.color || "#000";
-    el.style.backgroundPosition = def.pos || "center";
+    el.style.backgroundPosition = def.pos || defaults.pos || "center";
+    el.style.backgroundSize = def.fit || defaults.fit || "cover";
     if (!def.image) {
       labelEl.textContent = labelText || "";
       return;
@@ -150,7 +151,8 @@ const UI = (() => {
 
   function showCg(id) {
     const def = D.cgs[id];
-    paint($("cg"), def, $("cg-caption"), def.caption);
+    // 一枚絵はふつう切らずに全体を見せて、少し上寄りに置く（会話ウィンドウに顔が隠れないように）
+    paint($("cg"), def, $("cg-caption"), def.caption, { fit: "contain", pos: "center 40%" });
     $("cg").classList.add("show");
   }
 

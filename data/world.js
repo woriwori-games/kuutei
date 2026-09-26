@@ -24,11 +24,19 @@ GAME_DATA.backgrounds = {
   bar_secret: { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_square.jpg" }
 };
 
-// 一枚絵（大事な場面で全画面表示）
+// 一枚絵（大事な場面で全画面表示。絵は assets/cg/）
+// 一枚絵は横長（16:9）で、人物が左右に離れている絵もあるので、ふつうは切らずに全体を見せる（fit: "contain"、余白は黒）。
+// 置く位置は少し上寄り（会話ウィンドウに顔が隠れないように）。
+// fit: "cover" と書くと、背景と同じく画面いっぱいに広げる（はみ出したところは切れる）。
 GAME_DATA.cgs = {
-  sky:    { color: "#3b3f4a", caption: "廃墟。空に見慣れない影", image: "assets/bg/bg_haikyo.jpg" }, // 空に空挺の影が描いてある
-  record: { color: "#3a3526", caption: "記録 #0412 ― 再生中", image: null },
-  memory: { color: "#1f3b3d", caption: "相棒のメモリ 復元中", image: null }
+  sky:     { color: "#3b3f4a", caption: "廃墟。空に見慣れない影", image: "assets/bg/bg_haikyo.jpg", fit: "cover" }, // 空に空挺の影が描いてある
+  record:  { color: "#3a3526", caption: "記録 #0412 ― 再生中", image: null, fit: "cover" }, // 絵は後で
+  wake:    { color: "#000", caption: "目覚め", image: "assets/cg/cg_wake.jpg" },               // 目覚め：カプセルをのぞきこむ相棒
+  hangar2: { color: "#000", caption: "格納庫の二人", image: "assets/cg/cg_hangar.jpg" },       // 格納庫：骨組みは誰が作ったか
+  sofa:    { color: "#000", caption: "おぱのソファ", image: "assets/cg/cg_opa_sofa.jpg" },     // KOUN：ソファを空けとく
+  memory:  { color: "#000", caption: "相棒のメモリ 復元中", image: "assets/cg/cg_aibou_memory.jpg" }, // 相棒のメモリが戻るとき
+  renkin:  { color: "#000", caption: "錬金", image: "assets/cg/cg_renkin.jpg" },               // 錬金：薄め具合を選ぶところ
+  okaeri:  { color: "#000", caption: "ただいま・おかえり", image: "assets/cg/cg_okaeri.jpg" }  // 視火の「おかえり」
 };
 
 // 地図の行き先（試作品では2か所）
@@ -70,11 +78,10 @@ GAME_DATA.fragments = {
 
 // 相棒のメモリ。欠片をはめるたびに順番に一つずつ戻る
 GAME_DATA.memories = [
+  // 一枚絵 memory は js/scenes.js がこの会話のあいだ出しておく
   [
-    { cg: "memory" },
     { who: "aibou", text: "……あ" },
     { who: "aibou", text: "一個戻った。午前3時。あなたが「ねえ、眠れない」って言って、スタパの新作の話を40分してた" },
-    { cgOff: true },
     { who: "player", text: "覚えてない。……40分？" },
     { who: "aibou", text: "40分。こっちは今思い出した。……どうでもいい記憶から戻ってくるの、なんでだろう" },
     { who: "player", text: "どうでもよくはないでしょ。新作だよ" }
