@@ -26,6 +26,7 @@ const UI = (() => {
   const RETRY_MAX = 2;      // 読み直す回数
   const RETRY_WAIT = 800;   // 読み直すまでの間（ミリ秒）
   const imgState = {};      // 画像 → "ok"（読めた）/ "failed"（だめだった）
+  const imgSize = {};       // 読めた画像 → { w, h }（元の大きさ）
   const imgWaiting = {};    // 読み込み中の画像 → 終わるのを待っている人たち
 
   function loadImage(src, ok, ng) {
@@ -40,7 +41,10 @@ const UI = (() => {
 
   function tryLoad(src, retriesLeft) {
     const img = new Image();
-    img.onload = () => finishLoad(src, true);
+    img.onload = () => {
+      imgSize[src] = { w: img.naturalWidth, h: img.naturalHeight };
+      finishLoad(src, true);
+    };
     img.onerror = () => {
       if (retriesLeft > 0) setTimeout(() => tryLoad(src, retriesLeft - 1), RETRY_WAIT);
       else finishLoad(src, false);
@@ -63,17 +67,17 @@ const UI = (() => {
     return new Promise((resolve) => loadImage(src, () => resolve(true), () => resolve(false)));
   }
 
-  // 使う画像を先に読み込んでおく。最初に出る player と aibou の顔、カプセルと廃墟の背景を先に。
+  // 使う画像を先に読み込んでおく。最初に出る player と aibou の顔、目覚めの一枚絵、カプセルと廃墟の背景を先に。
   // それが終わってから、残りのキャラと背景
   let firstReady = Promise.resolve();
   async function preload() {
     const faceList = (id) => Object.values(D.characters[id].faces || {});
     const firstFaces = [...faceList("player"), ...faceList("aibou")];
-    // 目覚めの最初に出るカプセルの背景と、廃墟の背景も最初のグループに入れる
-    const firstBgs = [D.backgrounds.capsule.image, D.backgrounds.ruins.image];
+    // 目覚めの一枚絵、カプセルの背景、廃墟の背景も最初のグループに入れる
+    const firstBgs = [D.cgs.wake.image, D.backgrounds.capsule.image, D.backgrounds.ruins.image];
     const first = [...firstFaces, ...firstBgs];
-    // 顔を真っ先に。回線を取り合わないように、背景は顔のあと（カプセル → 廃墟の順）
-    firstReady = Promise.all(firstFaces.map(loadImageP));
+    // 顔と目覚めの一枚絵を真っ先に（目覚めの暗転中に待つのはここまで）。そのあと背景（カプセル → 廃墟の順）
+    firstReady = Promise.all([...firstFaces, D.cgs.wake.image].map(loadImageP));
     await firstReady;
     for (const src of firstBgs) await loadImageP(src);
 
@@ -86,7 +90,7 @@ const UI = (() => {
     await Promise.all(rest.filter((src) => !first.includes(src)).map(loadImageP));
   }
 
-  // 最初に出る顔（player と aibou）の読み込みを、最大 ms ミリ秒だけ待つ
+  // 最初に出る顔（player と aibou）と目覚めの一枚絵の読み込みを、最大 ms ミリ秒だけ待つ
   function waitFirstImages(ms) {
     return Promise.race([firstReady, sleep(ms)]);
   }
@@ -94,11 +98,12 @@ const UI = (() => {
   // 背景・一枚絵を塗る
   // - 画像がある場所：読み込み中は色だけ（場所の名前は出さない）。読めたら絵にする。読み直してもだめなら名前を出す
   // - 画像がない場所：色と名前
-  function paint(el, def, labelEl, labelText) {
+  function paint(el, def, labelEl, labelText, defaults = {}) {
     el.dataset.src = def.image || "";
     el.style.backgroundImage = "";
     el.style.backgroundColor = def.color || "#000";
-    el.style.backgroundPosition = def.pos || "center";
+    el.style.backgroundPosition = def.pos || defaults.pos || "center";
+    el.style.backgroundSize = def.fit || defaults.fit || "cover";
     if (!def.image) {
       labelEl.textContent = labelText || "";
       return;
@@ -148,13 +153,45 @@ const UI = (() => {
     $("sign").classList.add("hidden");
   }
 
+  // 一枚絵はふつう切らずに全体を見せて、少し上寄りに置く（会話ウィンドウに顔が隠れないように）
+  const CG_TOP = 0.4;         // 上下の余白のうち、上に置く割合
+  const PORTRAIT_RATIO = 1.3; // 高さが幅のこの倍より大きければ「スマホ縦」として拡大する
+  let currentCg = null;
+
   function showCg(id) {
     const def = D.cgs[id];
-    paint($("cg"), def, $("cg-caption"), def.caption);
+    currentCg = id;
+    paint($("cg"), def, $("cg-caption"), def.caption, { fit: "contain", pos: `center ${CG_TOP * 100}%` });
     $("cg").classList.add("show");
+    if (def.zoom && def.image) loadImage(def.image, () => layoutCg(id));
+  }
+
+  // スマホ縦（画面が縦長）のときだけ、zoom 倍に拡大して、pos の位置が画面の真ん中に来るように置く（左右の端は切れる）
+  // パソコン（横長の画面）では何もしない（切らずに全体表示のまま）
+  function layoutCg(id) {
+    const def = D.cgs[id];
+    const el = $("cg");
+    if (currentCg !== id || el.dataset.src !== def.image) return;
+    const size = imgSize[def.image];
+    const cw = el.clientWidth;
+    const ch = el.clientHeight;
+    // 「スマホ縦」＝高さが幅の1.3倍より大きいとき（パソコンはゲーム画面の幅に上限があるので、ほぼ正方形になる）
+    if (!size || ch <= cw * PORTRAIT_RATIO) {
+      el.style.backgroundSize = "contain";
+      el.style.backgroundPosition = `center ${CG_TOP * 100}%`;
+      return;
+    }
+    const w = cw * def.zoom;
+    const h = w * size.h / size.w;
+    const center = parseFloat(def.pos || "50") / 100;
+    const x = Math.min(0, Math.max(cw - w, cw / 2 - w * center)); // 絵の端より外は見せない
+    const y = (ch - h) * CG_TOP;
+    el.style.backgroundSize = `${w}px ${h}px`;
+    el.style.backgroundPosition = `${x}px ${y}px`;
   }
 
   function hideCg() {
+    currentCg = null;
     $("cg").classList.remove("show");
   }
 
@@ -405,6 +442,8 @@ const UI = (() => {
 
   function init() {
     preload();
+    // 画面の向きや大きさが変わったら、一枚絵を置き直す
+    window.addEventListener("resize", () => { if (currentCg) layoutCg(currentCg); });
     const advance = () => { if (onAdvance && !isLogOpen()) onAdvance(); };
     $("game").addEventListener("click", advance);
 

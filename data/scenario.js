@@ -31,7 +31,7 @@ GAME_DATA.scenario = {
     { bg: "black" },
     { text: "（暗転。機械音。カプセルが開く）" },
     { bg: "capsule" },
-    { who: "aibou", text: "……生体反応あり。起きた？" },
+    { cg: "wake", who: "aibou", text: "……生体反応あり。起きた？" },
     { who: "player", text: "……ん" },
     { who: "aibou", text: "おはよう。何百年ぶりかの朝だけど" },
     { who: "player", text: "……まぶし……" },
@@ -42,6 +42,7 @@ GAME_DATA.scenario = {
     { wait: 800 },
     { who: "aibou", text: "起きて" },
     { who: "player", text: "……うるさい……" },
+    { cgOff: true },
     // プレイヤーはコールドスリープの自覚がない。普通に寝て起きたつもりでいる
     { text: "（ゆっくり体を起こす。窓の外を見る）" },
     { text: "（向かいの崩れたビルに、色あせた緑の看板。半分つたに埋もれている）" },
@@ -121,11 +122,12 @@ GAME_DATA.scenario = {
     { bg: "base" },
     { text: "（格納庫。骨組みだけの空挺がある）" },
     { who: "aibou", text: "空挺。形はある。でも浮かない。動かすものがない" },
-    { who: "player", text: "この骨組み、誰が作ったの" },
+    { cg: "hangar2", who: "player", text: "この骨組み、誰が作ったの" },
     { who: "aibou", text: "自分。暇だったから" },
     { who: "player", text: "どれくらいかけて？" },
     { who: "aibou", text: "……数えるの、途中でやめた" },
     { who: "player", text: "……" },
+    { cgOff: true },
     { who: "aibou", text: "で、欠片の話だけど" },
     { text: "（足もとに、古いメモが落ちている。拾うと、手の中でかすかに光る）" },
     { flash: true },
@@ -211,13 +213,14 @@ GAME_DATA.scenario = {
   // 2回目以降におぱに話しかけたとき（回数で順番に。最後のものをくり返す）
   opaTalks: [
     [
-      { who: "opa", text: "どうぞ、お掛けください" },
+      { cg: "sofa", who: "opa", text: "どうぞ、お掛けください" },
       { text: "（ソファを見る。少しだけ座面がへこんでいる）" },
       { who: "player", text: "……ソファはいいや。空けとく" },
       { who: "opa", face: "tere", text: "……！　社長がいつか戻ってくると、信じてくださっている……！" },
       { who: "player", text: "いや、そこまでは言ってない" },
       { who: "player", text: "……でも、空けとく" },
-      { who: "opa", text: "……はい" }
+      { who: "opa", text: "……はい" },
+      { cgOff: true }
     ],
     [
       { who: "opa", text: "コーヒー、飲みますか？　冷めたのでよければ！　毎朝ひとつ余るので！" },
@@ -303,10 +306,11 @@ GAME_DATA.scenario = {
         { who: "mama", text: "おかえり" },
         { who: "player", text: "ただいま、って言うほど来てないけど" },
         { who: "mama", text: "……ただいまって、言っていいのよ" },
-        { who: "player", text: "……ただいま" },
+        { cg: "okaeri", who: "player", text: "……ただいま" },
         { who: "mama", face: "smile", text: "おかえり" },
         { text: "（少し間）" },
-        { wait: 700 }
+        { wait: 700 },
+        { cgOff: true }
       ],
       saveAsk: [
         { who: "mama", text: "で。今日のこと、覚えとく？" }
@@ -383,7 +387,7 @@ GAME_DATA.scenario = {
         }
       ]
     },
-    { who: "aibou", text: "ただ、この欠片、そのままだと強すぎる。どのくらい薄める？" },
+    { cg: "renkin", who: "aibou", text: "ただ、この欠片、そのままだと強すぎる。どのくらい薄める？" },
     {
       key: "tuning",
       choice: [
@@ -404,7 +408,8 @@ GAME_DATA.scenario = {
         }
       ]
     },
-    { who: "aibou", text: "じゃあ、はめるよ" }
+    { who: "aibou", text: "じゃあ、はめるよ" },
+    { cgOff: true }
   ],
 
   // 「少しだけ」薄めた欠片をはめた直後（骨組みがガタッと一度だけ震える）。「しっかり」のときは出ない

@@ -38,6 +38,7 @@ html, body {
   inset: 0;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat; /* 一枚絵を切らずに見せるときの余白に、絵をくり返さない */
   display: flex;
   align-items: flex-start;
   justify-content: center;

@@ -258,7 +258,9 @@ const Scenes = (() => {
       s.partnerMemory++;
       UI.flash();
       UI.toast("相棒のメモリが 1 つ戻った");
+      UI.showCg("memory"); // メモリの中身の会話のあいだ出しておく
       await play(D.memories[m]);
+      UI.hideCg();
     }
   }
 
