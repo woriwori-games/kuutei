@@ -13,7 +13,7 @@ function newState() {
     emotions: { dou: 0, sei: 0, sentaku: 0, joushou: 0 },  // 感情系統ごとの数（船の性格の元）
     partnerMemory: 0,            // 相棒のメモリがいくつ戻ったか
     visits: { mama: 0 },         // ママの店に行った回数
-    talks: {},                   // キャラごとの話しかけ回数 { opa: 2, mama: 1 }
+    talks: {},                   // キャラごとの話しかけ回数 { opa: 2, mama: 1, yamada: 4 }（yamada は「山田と話す」を選んだ合計。伝える会話の回は数えない）
     choices: {},                 // 選んだ答えの記録 { koun0412_reading: "ureshii" }
     flags: {}                    // できごとの記録 { metOpa: true }
   };

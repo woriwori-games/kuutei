@@ -196,7 +196,6 @@ const Scenes = (() => {
   async function yamada() {
     const s = S();
     if (!s.flags.metYamada) {
-      Game.addTalk("yamada");
       await play(sc.yamadaFirst);
       await play(sc.recordYamada);
       await play(sc.yamadaAfterRecord);
@@ -212,16 +211,15 @@ const Scenes = (() => {
         { label: "地図に戻る" }
       ]);
       if (i === 0) {
-        const n = Game.addTalk("yamada") - 1; // 「山田と話す」を選んだ回数
         const reading = s.choices.yamada_reading;
         if (reading && !s.flags.toldYamada) {
-          // 錬金で読んだ温度を、山田に伝える（一度だけ）
+          // 錬金で読んだ温度を、山田に伝える（一度だけ。この回は話しかけ回数に数えない）
           s.flags.toldYamada = true;
           await play(sc.yamadaTold[reading]);
-        } else if (n === sc.yamadaTalkSpecial.at) {
-          await play(sc.yamadaTalkSpecial.steps);
         } else {
-          await play(pickByCount(sc.yamadaTalks, n - 1));
+          // 「山田と話す」の合計回数（ゲーム全体で足していく。セーブにも残る）
+          const n = Game.addTalk("yamada");
+          await play(yamadaTalkSteps(n));
         }
       } else if (i === 1) {
         await play(sc.recordYamada);
@@ -229,6 +227,16 @@ const Scenes = (() => {
         return "map";
       }
     }
+  }
+
+  // 山田のいつものセリフを、話しかけた合計回数から選ぶ
+  function yamadaTalkSteps(n) {
+    const special = sc.yamadaTalkSpecial;
+    if (n === special.at) return special.steps;
+    const stages = sc.yamadaTalks;
+    if (n > special.at) return stages[0].steps; // 特別なセリフのあとは、最初のセリフに戻る
+    const stage = stages.find((t) => n <= t.until) || stages[stages.length - 1];
+    return stage.steps;
   }
 
   async function bar() {
