@@ -12,6 +12,11 @@ const Scenes = (() => {
     return Object.values(S().ship).reduce((n, list) => n + list.length, 0);
   }
 
+  // 空挺にはまっている欠片のうち、「少しだけ」薄めたものの数
+  function lightCount() {
+    return Object.values(S().ship).reduce((n, list) => n + list.filter((f) => f.tuning === "light").length, 0);
+  }
+
   // 空挺の骨組み（4部位×2個）の表示
   function shipHtml() {
     const parts = D.shipParts.map((p) => {
@@ -86,8 +91,21 @@ const Scenes = (() => {
       warpAfterOpa(s);
       s.flags.metYamada = true;
       s.fragments.push("yamada");
-    } }
+    } },
+    // 町の場面だけを見る（見終わったら地図へ）
+    { label: "町：自販機", go: "townOnly", setup: (s) => { s.flags.firstTravel = true; warpTownBg = "town_vending"; } },
+    { label: "町：交差点", go: "townOnly", setup: (s) => { s.flags.firstTravel = true; warpTownBg = "town_crossing"; } },
+    { label: "町：公園", go: "townOnly", setup: (s) => { s.flags.firstTravel = true; warpTownBg = "town_park"; } }
   ];
+
+  // ワープで選んだ町の場面（背景の名前で探す）だけを再生する
+  let warpTownBg = null;
+  async function townOnly() {
+    BGM.scene("town");
+    const steps = D.townScenes.random.find((t) => t[0].bg === warpTownBg);
+    if (steps) await play(steps);
+    return "map";
+  }
 
   async function warp() {
     const i = await UI.choose([...WARPS.map((w) => ({ label: w.label })), { label: "やめる" }]);
@@ -374,7 +392,12 @@ const Scenes = (() => {
     const light = ctx.tuning === "light";
     if (light) UI.shake(".ship");
     await UI.say(null, `欠片「${frag.name}」が、空挺の「${part.name}」にはまった`);
-    if (light) await play(sc.tuningLightAfter);
+    if (light) {
+      // ベルトの話は「少しだけ」を選んだ回数（はまっている欠片のうち light の数）で変わる
+      const t = sc.tuningLightAfter;
+      await play(t.common);
+      await play(pickByCount(t.belts, lightCount() - 1));
+    }
     BGM.scene("base"); // はめ終わったら格納庫の曲に戻す
 
     // 相棒のメモリが一つ戻る
@@ -410,5 +433,5 @@ const Scenes = (() => {
     return "map";
   }
 
-  return { title, wake, naming, hangar, map, koun, yamada, bar, base };
+  return { title, wake, naming, hangar, map, koun, yamada, bar, base, townOnly };
 })();

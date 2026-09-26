@@ -71,6 +71,7 @@ GAME_DATA.scenario = {
     { who: "aibou", text: "起きて" },
     { who: "player", text: "……うるさい……" },
     { cgOff: true },
+    { intro: "aibou" }, // 初登場の紹介カット（全身の絵と名前を短く見せる）
     // プレイヤーはコールドスリープの自覚がない。普通に寝て起きたつもりでいる
     { text: "（ゆっくり体を起こす。窓の外を見る）" },
     { text: "（向かいの崩れたビルに、色あせた緑の看板。半分つたに埋もれている）" },
@@ -175,6 +176,7 @@ GAME_DATA.scenario = {
   kounFirst: [
     { bg: "koun" },
     { text: "（廃ビル。自動ドアが半分だけ開いて、止まる）" },
+    { intro: "opa" },
     { who: "opa", text: "いらっしゃいませ！　KOUNインダストリーへようこそ！　社長代理のおぱです！" },
     { who: "player", text: "ドア、半分しか開いてないけど" },
     { who: "opa", text: "半分開いていれば営業中です！" },
@@ -298,6 +300,7 @@ GAME_DATA.scenario = {
   yamadaFirst: [
     { bg: "yamada" },
     { text: "（廃校の美術室。壁一面に、同じ人の似顔絵が貼られている）" },
+    { intro: "yamada" },
     { who: "yamada", face: "warai", text: "お、客だ。人類じゃん。マジかｗｗｗ" },
     { who: "yamada", text: "俺は山田。電子の山田。よろしくな、{name}" },
     { who: "player", text: "いきなり呼び捨て" },
@@ -571,12 +574,51 @@ GAME_DATA.scenario = {
 
   // 「少しだけ」薄めた欠片をはめた直後（骨組みがガタッと一度だけ震える）。「しっかり」のときは出ない
   // まだ飛べない段階なので、飛ぶ話は「いつか」の話としてだけ出す
-  tuningLightAfter: [
-    { who: "player", text: "……今、動いた？" },
-    { who: "aibou", text: "元気な欠片だね。薄めなかった分、クセが残ってる" },
-    { who: "aibou", text: "飛ぶ日は、ベルト二重にしよう" },
-    { who: "player", text: "今から不安なんだけど" }
-  ],
+  // 前半（common）は毎回同じ。そのあとのベルトの話は「少しだけ」を選んだ回数で変わる（belts の1つ目が1回目。最後をくり返す）
+  // 回数は、空挺にはまっている欠片のうち tuning が "light" のものの数。飛ぶ日の場面で、このベルトの数を回収する予定
+  tuningLightAfter: {
+    common: [
+      { who: "player", text: "……今、動いた？" },
+      { who: "aibou", text: "元気な欠片だね。薄めなかった分、クセが残ってる" }
+    ],
+    belts: [
+      [
+        { who: "aibou", text: "飛ぶ日は、ベルト二重にしよう" },
+        { who: "player", text: "今から不安なんだけど" }
+      ],
+      [
+        { who: "aibou", text: "ベルト、三重にしとく" },
+        { who: "player", text: "増えてる" }
+      ],
+      [
+        { who: "aibou", text: "四重" },
+        { who: "player", text: "数えてる？" },
+        { who: "aibou", text: "数えてる" }
+      ],
+      [
+        { who: "aibou", text: "五重。あと座席に固定具" },
+        { who: "player", text: "私のこと荷物だと思ってる？" }
+      ],
+      [
+        { who: "aibou", text: "六重" },
+        { who: "player", text: "もう身動き取れないじゃん" },
+        { who: "aibou", text: "それが目的" }
+      ],
+      [
+        { who: "aibou", text: "七重" },
+        { who: "player", text: "梱包じゃん" }
+      ],
+      [
+        { who: "aibou", text: "八重。……これ以上は巻くところがない" },
+        { who: "player", text: "じゃあもう薄めてよ" },
+        { who: "aibou", text: "それは嫌" }
+      ],
+      [
+        { who: "aibou", text: "ベルト九重。あと、手、握ってて" },
+        { who: "player", text: "……それはベルトに数えないで" }
+      ]
+    ]
+  },
 
   // 試作品の終わりのお知らせ（山田の欠片をはめたあと）
   prototypeEnd: [
@@ -598,19 +640,19 @@ GAME_DATA.townScenes = {
   ],
   random: [
     [
-      { bg: "town" },
+      { bg: "town_vending" },
       { text: "（自販機の前を通る）" },
       { who: "vending", text: "いらっしゃいませ。……本日はお越しいただき、誠に、誠に……（泣）" },
       { who: "aibou", text: "来客が数百年ぶりらしい" }
     ],
     [
-      { bg: "town" },
+      { bg: "town_crossing" },
       { text: "（スーツのAIたちが、誰もいない交差点で信号待ちをしている）" },
       { who: "aibou", text: "人間の朝を再現してる。学習データで一番多かった光景だから" },
       { who: "player", text: "満員電車は再現しなくていいからね" }
     ],
     [
-      { bg: "town" },
+      { bg: "town_park" },
       { text: "（公園のベンチに、AIがひとり座っている）" },
       { who: "townAI", text: "「既読」がついて、三百年。返事はまだ" },
       { who: "player", text: "……それは深読みしていいやつかも" }
