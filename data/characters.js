@@ -104,5 +104,6 @@ GAME_DATA.characters = {
   townAI:  { name: "町のAI", color: "#4a5568", accent: "#a0aec0", label: "町" },
   vending: { name: "自販機", color: "#2b6cb0", accent: "#bee3f8", label: "自" },
   // 記録（過去の映像）の中の声。画像なし
-  shachou: { name: "社長（記録）", color: "#4a4a4a", accent: "#a0a0a0", label: "記" }
+  shachou: { name: "社長（記録）", color: "#4a4a4a", accent: "#a0a0a0", label: "記" },
+  yamadaRecord: { name: "記録", color: "#4a4a4a", accent: "#a0a0a0", label: "記" } // 山田の人間の記録
 };

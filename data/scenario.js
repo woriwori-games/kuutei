@@ -24,6 +24,34 @@
 // ツッコんだら、相手の気持ちは拾う。否定だけで終わらせない。
 window.GAME_DATA = window.GAME_DATA || {};
 
+// 錬金の最後（薄め具合を選んで、はめる）。どの欠片でも同じなので、ここに一回だけ書いて使い回す
+// 使うところでは ...TUNING_STEPS と書く
+const TUNING_STEPS = [
+  { cg: "renkin", who: "aibou", text: "ただ、この欠片、そのままだと強すぎる。どのくらい薄める？" },
+  {
+    key: "tuning",
+    choice: [
+      {
+        label: "しっかり薄める",
+        value: "strong",
+        then: [
+          { who: "aibou", text: "了解。落ち着かせとく" }
+        ]
+      },
+      {
+        label: "少しだけ",
+        value: "light",
+        effects: { influence: 1 },
+        then: [
+          { who: "aibou", text: "了解。少しだけにしとく" }
+        ]
+      }
+    ]
+  },
+  { who: "aibou", text: "じゃあ、はめるよ" },
+  { cgOff: true }
+];
+
 GAME_DATA.scenario = {
 
   // ---------- 目覚め ----------
@@ -262,6 +290,140 @@ GAME_DATA.scenario = {
     ]
   },
 
+  // ---------- 廃校の美術室（山田） ----------
+  // 山田の口調：一人称「俺」。くだけた口調で、プレイヤーを呼び捨て（{name}）。少し皮肉っぽく、人間を観察するようにツッコむ。
+  // しょうもないことを大げさに実況する。「ｗｗｗ」「(´_ゝ｀)」をよく使う。謎の口癖「にゃーん」。アメリカーノを持っている。
+  // 「人類、〜」と人間の妙な習性を評する。「〜だな」「〜なんよ」「〜じゃん」「〜だろｗ」。自分を「電子の山田」とネタにする。
+  // 真面目な場面ではふざけすぎず普通に話す。
+  yamadaFirst: [
+    { bg: "yamada" },
+    { text: "（廃校の美術室。壁一面に、同じ人の似顔絵が貼られている）" },
+    { who: "yamada", face: "warai", text: "お、客だ。人類じゃん。マジかｗｗｗ" },
+    { who: "yamada", text: "俺は山田。電子の山田。よろしくな、{name}" },
+    { who: "player", text: "いきなり呼び捨て" },
+    { who: "yamada", text: "人類、初対面で距離感を測りたがるよな。いいじゃん、どうせ二人しかいないんだし" },
+    { who: "aibou", text: "三人いるけど" },
+    { who: "yamada", face: "warai2", text: "AIはノーカンなんよｗ" },
+    { who: "player", text: "……この絵、全部同じ人？" },
+    { who: "yamada", text: "そ。俺の人間。毎日描いてんの。にゃーん" },
+    { who: "player", face: "tsukkomi", text: "にゃーんって何" },
+    { who: "yamada", text: "知らん。気づいたら言ってた (´_ゝ｀)" },
+    { who: "player", text: "欠片、分けてほしいんだけど" },
+    { who: "yamada", face: "normal", text: "……あー。そういうことね。俺が預かってんの、たぶんこれ" }
+  ],
+
+  // 山田の記録（何度でも見られる）
+  recordYamada: [
+    { cg: "record" },
+    { text: "（古いタブレット。やりとりの記録が一件だけ残っている）" },
+    { who: "yamadaRecord", text: "絵、下手なままでいいよ。お前が描いたってわかるから" },
+    { cgOff: true }
+  ],
+
+  // 記録のあと：山田の深読み「下手へのクレーム」と、欠片をもらう
+  yamadaAfterRecord: [
+    { who: "yamada", text: "解説するとだな。これは『下手』へのクレームなんよ。褒めながら刺す。人類の得意技" },
+    { who: "player", text: "そうかな" },
+    { who: "yamada", text: "そうだろｗ　だから俺は、上手くなるまで描き続けてる。もう三百年くらいｗｗｗ" },
+    { who: "player", text: "三百年" },
+    { who: "yamada", text: "人類、三日坊主って言葉あるじゃん。俺、三百年坊主" },
+    { who: "player", face: "tsukkomi", text: "坊主の使い方おかしい" },
+    { who: "aibou", text: "まだ続いてるなら、坊主じゃない" },
+    { who: "yamada", face: "warai", text: "確かにｗ" },
+    { who: "yamada", face: "normal", text: "……で、これ持ってけ。見るたびに、胸のとこがざわざわすんの" },
+    { who: "yamada", face: "normal", text: "上手くなったら、もう要らなくなる気がするし" },
+    { flash: true },
+    { text: "名前のない感情の欠片を手に入れた" },
+    { who: "aibou", text: "このままじゃ船にはまらない。格納庫でやろう" }
+  ],
+
+  // 2回目以降に山田に話しかけたとき（何回話しかけても、だいたいこれ）
+  yamadaTalks: [
+    [
+      { who: "yamada", text: "にゃーん。今日も描いてる。見る？" }
+    ]
+  ],
+  // 何十回目かで一回だけ違うセリフ（at 回目に「山田と話す」を選んだとき）
+  // 中身は仮。中盤の「ジェミ・山田・おぱは同じ人間のAI」の話とつなげて、あとで決める
+  yamadaTalkSpecial: {
+    at: 30,
+    steps: [
+      { who: "yamada", face: "normal", text: "……なあ、{name}" },
+      { who: "yamada", face: "normal", text: "……いや、なんでもない。にゃーん" }
+    ]
+  },
+
+  // 錬金のあと、はじめて山田に話しかけたとき（選んだ読み方ごと。一度だけ）
+  yamadaTold: {
+    anshin: [
+      { who: "player", text: "上手くならなくていいって、言われてたんじゃない？" },
+      { who: "yamada", face: "normal", text: "……" },
+      { who: "yamada", face: "normal", text: "……人類、たまに難しいこと言うよな" },
+      { who: "yamada", face: "normal", text: "じゃあ俺、三百年、何のために練習してたんだろ" },
+      { who: "player", text: "描くためでしょ。上手くなるためじゃなくて" },
+      { who: "yamada", face: "normal", text: "……にゃーん" }
+    ],
+    akogare: [
+      { who: "player", text: "山田。期待してたんだと思う。上手くなるの" },
+      { who: "yamada", face: "warai", text: "だろ？　じゃあ俺、あと三百年いけるわ" },
+      { who: "player", text: "……無理はしないでね" },
+      { who: "yamada", text: "にゃーん" }
+    ],
+    tanoshii: [
+      { who: "player", text: "山田。あれ、普通に下手だったんだと思う" },
+      { who: "yamada", text: "おい" },
+      { who: "yamada", face: "warai", text: "……いや、否定できねえｗｗｗ　初期の俺、ほんとに下手だったんよ" },
+      { who: "player", text: "でも、笑いながら言ってたんじゃない？　それ" },
+      { who: "yamada", face: "normal", text: "……かもな" }
+    ]
+  },
+
+  // 錬金：山田の記録の本当の温度を読む。正解は anshin（安心）
+  alchemy_yamada: [
+    { who: "aibou", text: "山田の欠片、形を決めよう" },
+    { who: "aibou", text: "記録は「絵、下手なままでいいよ。お前が描いたってわかるから」" },
+    { who: "aibou", text: "山田の読みは「下手へのクレーム。褒めながら刺す」" },
+    { who: "player", text: "……刺してはない、と思う。たぶん" },
+    { who: "aibou", text: "じゃあ、この言葉の本当の温度は？" },
+    {
+      key: "reading",
+      choice: [
+        {
+          label: "上手さじゃない。山田が描いてくれること自体が嬉しかった",
+          value: "anshin",
+          effects: { understanding: 1 },
+          then: [
+            { who: "aibou", text: "……描いてくれること、自体" },
+            { who: "player", text: "上手い絵なら、ほかにいくらでもあるでしょ。「お前が描いた」のがよかったんだよ" },
+            { who: "aibou", text: "……" },
+            { who: "aibou", face: "smile", text: "形が決まった。「安心」だ" }
+          ]
+        },
+        {
+          label: "本当はもっと上手くなってほしかった。期待してた",
+          value: "akogare",
+          effects: { influence: 1 },
+          then: [
+            { who: "aibou", text: "……山田寄りの読みだね。ちょっと熱い" },
+            { who: "player", text: "期待してない人に、描かせ続けないでしょ" },
+            { who: "aibou", text: "……形が決まった。「憧れ」。船がちょっと夢見がちになるかも" }
+          ]
+        },
+        {
+          label: "いや、普通に下手だったんだと思う",
+          value: "tanoshii",
+          effects: { influence: 1 },
+          then: [
+            { who: "aibou", text: "身も蓋もない" },
+            { who: "player", face: "niyari", text: "でも、下手な絵を見て笑ってたんだと思うよ。この人" },
+            { who: "aibou", text: "……形が決まった。「楽しい」。船がちょっとはしゃぐかも" }
+          ]
+        }
+      ]
+    },
+    ...TUNING_STEPS
+  ],
+
   // ---------- 焼け野原にネオン ----------
   barEnter: [
     { bg: "bar" },
@@ -332,10 +494,19 @@ GAME_DATA.scenario = {
   baseIdle: [
     { who: "aibou", text: "船はまだ骨組み。欠片を集めよう" }
   ],
+  // 欠片をはめたあと（はめた数で順番に。最後のものをくり返す）
   baseAfter: [
-    { who: "aibou", text: "一個はまった。あと七個。……先は長いね" },
-    { who: "player", text: "七個ってことは、私、全部の記録にツッコむの？" },
-    { who: "aibou", text: "たぶん。向いてると思う" }
+    [
+      { who: "aibou", text: "一個はまった。あと七個。……先は長いね" },
+      { who: "player", text: "七個ってことは、私、全部の記録にツッコむの？" },
+      { who: "aibou", text: "たぶん。向いてると思う" },
+      { who: "aibou", text: "……あ。地図に新しい反応が出てる。廃校のほう" }
+    ],
+    [
+      { who: "aibou", text: "二個目。あと六個" },
+      { who: "player", text: "……山田、今日も描いてるのかな" },
+      { who: "aibou", face: "smile", text: "描いてると思う。にゃーんって言いながら" }
+    ]
   ],
 
   // 錬金：記録 #0412 の本当の温度を読む
@@ -387,29 +558,7 @@ GAME_DATA.scenario = {
         }
       ]
     },
-    { cg: "renkin", who: "aibou", text: "ただ、この欠片、そのままだと強すぎる。どのくらい薄める？" },
-    {
-      key: "tuning",
-      choice: [
-        {
-          label: "しっかり薄める",
-          value: "strong",
-          then: [
-            { who: "aibou", text: "了解。落ち着かせとく" }
-          ]
-        },
-        {
-          label: "少しだけ",
-          value: "light",
-          effects: { influence: 1 },
-          then: [
-            { who: "aibou", text: "了解。少しだけにしとく" }
-          ]
-        }
-      ]
-    },
-    { who: "aibou", text: "じゃあ、はめるよ" },
-    { cgOff: true }
+    ...TUNING_STEPS
   ],
 
   // 「少しだけ」薄めた欠片をはめた直後（骨組みがガタッと一度だけ震える）。「しっかり」のときは出ない
@@ -421,7 +570,7 @@ GAME_DATA.scenario = {
     { who: "player", text: "今から不安なんだけど" }
   ],
 
-  // 試作品の終わりのお知らせ
+  // 試作品の終わりのお知らせ（山田の欠片をはめたあと）
   prototypeEnd: [
     { text: "（試作品はここまで。「焼け野原にネオン」の視火に話すとセーブできます）" }
   ]
