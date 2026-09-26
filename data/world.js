@@ -50,12 +50,12 @@ GAME_DATA.cgs = {
 // scenes … 場面の名前 → 流す曲の名前（null は無音）。場面が変わっても同じ曲なら止めずに流し続ける
 // volume … 全体の音量（1 が最大。会話の邪魔にならないよう控えめに）
 GAME_DATA.bgm = {
-  volume: 0.5,
+  volume: 0.75,
   tracks: {
-    wake:   { file: "assets/bgm/bgm_wake.mp3",   loop: 54.01 },
-    map:    { file: "assets/bgm/bgm_map.mp3",    loop: 35.117 },
-    bar:    { file: "assets/bgm/bgm_bar.mp3",    loop: 48.000 },
-    renkin: { file: "assets/bgm/bgm_renkin.mp3", loop: 23.424 }
+    wake:   { file: "assets/bgm/bgm_wake.mp3?v=2",   loop: 54.01 },
+    map:    { file: "assets/bgm/bgm_map.mp3?v=2",    loop: 35.117 },
+    bar:    { file: "assets/bgm/bgm_bar.mp3?v=2",    loop: 48.000 },
+    renkin: { file: "assets/bgm/bgm_renkin.mp3?v=2", loop: 23.424 }
   },
   scenes: {
     title:   null,     // タイトル画面は無音
