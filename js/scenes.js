@@ -28,6 +28,7 @@ const Scenes = (() => {
 
   async function title() {
     UI.showLogButton(false);
+    BGM.scene("title");
     UI.hideMsg();
     UI.hideCg();
     UI.setBg("title");
@@ -41,6 +42,7 @@ const Scenes = (() => {
         </div>
       </div>`);
     const go = await UI.waitButtons(root);
+    BGM.unlock(); // 「はじめから」「つづきから」を押したときに、音を鳴らせるようにする
     UI.setStage("");
     UI.clearLog();
     UI.showLogButton(true);
@@ -50,6 +52,7 @@ const Scenes = (() => {
   }
 
   async function wake() {
+    BGM.scene("wake");
     // 暗転のあいだに、相棒とプレイヤーの顔の読み込みを少しだけ待つ（回線が遅いとき用。最大3秒）
     UI.setBg("black");
     await UI.waitFirstImages(3000);
@@ -58,6 +61,7 @@ const Scenes = (() => {
   }
 
   async function naming() {
+    BGM.scene("naming");
     await play(sc.namingIntro);
     const cands = D.nameCandidates;
     const selectable = cands.filter((c) => !c.locked).length;
@@ -98,12 +102,14 @@ const Scenes = (() => {
 
     S().playerName = name;
     await play(sc.namingDone);
+    BGM.scene("whyShip");
     await play(sc.whyShip);
     return "hangar";
   }
 
   // 格納庫：骨組みの空挺と、欠片とは何かの説明
   async function hangar() {
+    BGM.scene("hangar");
     UI.setBg("base");
     UI.setStage(shipHtml());
     await play(sc.hangar);
@@ -114,6 +120,7 @@ const Scenes = (() => {
   // 移動中の町の場面。最初の一回は固定、二回目からはランダム（同じのが続かないように）
   let lastTown = -1;
   async function travel() {
+    BGM.scene("town");
     const s = S();
     const t = D.townScenes;
     if (!s.flags.firstTravel) {
@@ -128,6 +135,7 @@ const Scenes = (() => {
   }
 
   async function map() {
+    BGM.scene("map");
     UI.hideMsg();
     UI.hideCg();
     UI.setBg("map");
@@ -156,6 +164,7 @@ const Scenes = (() => {
   }
 
   async function koun() {
+    BGM.scene("koun");
     const s = S();
     if (!s.flags.metOpa) {
       Game.addTalk("opa");
@@ -194,6 +203,7 @@ const Scenes = (() => {
 
   // 廃校の美術室（山田）。流れはKOUNと同じ：出会い → 記録 → 山田の深読み → 欠片
   async function yamada() {
+    BGM.scene("yamada");
     const s = S();
     if (!s.flags.metYamada) {
       await play(sc.yamadaFirst);
@@ -245,6 +255,7 @@ const Scenes = (() => {
     const sign = () => pickByCount(D.signboard, s.progress);
     // 入店の演出：絵の左端（ネオン看板）から、視火が映る位置までゆっくり流す。止まるまで会話は始めない
     UI.hideMsg();
+    BGM.scene("bar");
     await UI.panBg("bar", "0% center", D.backgrounds.bar.pos, 3000);
     await play(sc.barEnter);
     while (true) {
@@ -290,6 +301,7 @@ const Scenes = (() => {
     const steps = sc["alchemy_" + recordId];
     if (!steps) return; // 古いセーブなどで会話が無いときは何もしない
 
+    BGM.scene("renkin"); // 記録の温度を読むところから、欠片をはめ終わるまで
     const ctx = await play(steps);
     const id = ctx.reading;
     const frag = D.fragments[id];
@@ -308,6 +320,7 @@ const Scenes = (() => {
     if (light) UI.shake(".ship");
     await UI.say(null, `欠片「${frag.name}」が、空挺の「${part.name}」にはまった`);
     if (light) await play(sc.tuningLightAfter);
+    BGM.scene("base"); // はめ終わったら格納庫の曲に戻す
 
     // 相棒のメモリが一つ戻る
     const m = s.partnerMemory;
@@ -323,6 +336,7 @@ const Scenes = (() => {
 
   async function base() {
     const s = S();
+    BGM.scene("base");
     UI.hideCg();
     UI.setBg("base");
     UI.setStage(shipHtml());

@@ -44,6 +44,35 @@ GAME_DATA.cgs = {
   okaeri:  { color: "#000", caption: "ただいま・おかえり", image: "assets/cg/cg_okaeri.jpg", zoom: 1.25, pos: "52%" } // 視火とプレイヤー
 };
 
+// BGM（背景の音楽）。曲は assets/bgm/。Gemini で作った曲（Google の利用規約では、作った人の所有物として扱われる）
+// tracks … 曲の名前 → { file: ファイル, loop: 本当のループの長さ（秒）}
+//   4曲とも拍の頭で切ってループ用に作ってある。MP3は前後に少し余白が付くので、ファイルの長さではなく loop の長さでループさせる
+// scenes … 場面の名前 → 流す曲の名前（null は無音）。場面が変わっても同じ曲なら止めずに流し続ける
+// volume … 全体の音量（1 が最大。会話の邪魔にならないよう控えめに）
+GAME_DATA.bgm = {
+  volume: 0.5,
+  tracks: {
+    wake:   { file: "assets/bgm/bgm_wake.mp3",   loop: 54.01 },
+    map:    { file: "assets/bgm/bgm_map.mp3",    loop: 35.117 },
+    bar:    { file: "assets/bgm/bgm_bar.mp3",    loop: 48.000 },
+    renkin: { file: "assets/bgm/bgm_renkin.mp3", loop: 23.424 }
+  },
+  scenes: {
+    title:   null,     // タイトル画面は無音
+    wake:    "wake",   // 目覚め
+    naming:  "wake",   // 名前
+    whyShip: "wake",   // なぜ船を造るのか
+    hangar:  "wake",   // 格納庫（はじめて）
+    base:    "wake",   // 格納庫（錬金以外）
+    map:     "map",    // 地図
+    town:    "map",    // 移動中の町
+    koun:    "map",    // KOUNインダストリー（専用の曲ができるまで）
+    yamada:  "map",    // 廃校の美術室（専用の曲ができるまで）
+    bar:     "bar",    // 焼け野原にネオン（入店の看板が流れる演出から）
+    renkin:  "renkin"  // 錬金（記録の温度を読むところから、欠片をはめ終わるまで）
+  }
+};
+
 // 地図の行き先（試作品では2か所）
 GAME_DATA.places = [
   { id: "koun", name: "KOUNインダストリー", desc: "廃ビル。明かりがひとつだけ点いている" },
