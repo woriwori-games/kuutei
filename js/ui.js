@@ -449,6 +449,21 @@ const UI = (() => {
 
     // ログを開いている間は、会話が進まないようにクリックを止める
     $("log-btn").addEventListener("click", (e) => { e.stopPropagation(); openLog(); });
+
+    // 音のオン・オフ（設定はセーブとは別にブラウザに覚えておく）
+    const soundBtn = $("sound-btn");
+    const showSound = () => {
+      const on = BGM.isEnabled();
+      soundBtn.textContent = on ? "♪ 音：オン" : "♪ 音：オフ";
+      soundBtn.classList.toggle("off", !on);
+      soundBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    };
+    soundBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      BGM.setEnabled(!BGM.isEnabled());
+      showSound();
+    });
+    showSound();
     $("log").addEventListener("click", (e) => e.stopPropagation());
     $("log-close").addEventListener("click", closeLog);
 

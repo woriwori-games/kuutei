@@ -342,10 +342,10 @@ GAME_DATA.scenario = {
   // 錬金のあとの「山田に伝える」会話（yamadaTold）が出た回は、回数に数えない
   yamadaTalks: [
     { until: 3, steps: [
-      { who: "yamada", text: "にゃーん。今日も描いてる。見る？" }
+      { who: "yamada", face: "warai", text: "にゃーん。今日も描いてる。見る？" }
     ] },
     { until: 6, steps: [
-      { who: "yamada", text: "にゃーん。今日も描いてる。……見る？" }
+      { who: "yamada", face: "warai2", text: "にゃーん。今日も描いてる。……見る？" }
     ] },
     { until: 9, steps: [
       { who: "yamada", face: "normal", text: "……にゃーん。今日も、描いてる" }

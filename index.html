@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>空挺（仮題）</title>
-  <link rel="stylesheet" href="css/style.css?v=20260926f">
+  <link rel="stylesheet" href="css/style.css?v=20260926g">
 </head>
 <body>
   <div id="game">
@@ -34,7 +34,11 @@
     </div>
 
     <!-- ログ（スレを遡る） -->
-    <button id="log-btn" class="hidden" type="button">スレを遡る</button>
+    <!-- 右上のボタン（音のオン・オフ、スレを遡る） -->
+    <div id="top-btns">
+      <button id="sound-btn" type="button" aria-pressed="true">♪ 音：オン</button>
+      <button id="log-btn" class="hidden" type="button">スレを遡る</button>
+    </div>
     <div id="log" class="hidden">
       <div class="log-head">
         <span>スレを遡る</span>
@@ -48,14 +52,15 @@
   </div>
 
   <!-- 中身（データ） -->
-  <script src="data/characters.js?v=20260926f"></script>
-  <script src="data/world.js?v=20260926f"></script>
-  <script src="data/scenario.js?v=20260926f"></script>
+  <script src="data/characters.js?v=20260926g"></script>
+  <script src="data/world.js?v=20260926g"></script>
+  <script src="data/scenario.js?v=20260926g"></script>
   <!-- プログラム -->
-  <script src="js/state.js?v=20260926f"></script>
-  <script src="js/ui.js?v=20260926f"></script>
-  <script src="js/engine.js?v=20260926f"></script>
-  <script src="js/scenes.js?v=20260926f"></script>
-  <script src="js/main.js?v=20260926f"></script>
+  <script src="js/state.js?v=20260926g"></script>
+  <script src="js/ui.js?v=20260926g"></script>
+  <script src="js/engine.js?v=20260926g"></script>
+  <script src="js/bgm.js?v=20260926g"></script>
+  <script src="js/scenes.js?v=20260926g"></script>
+  <script src="js/main.js?v=20260926g"></script>
 </body>
 </html>
