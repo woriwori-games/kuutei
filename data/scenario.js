@@ -658,7 +658,7 @@ GAME_DATA.townScenes = {
       { who: "player", text: "……それは深読みしていいやつかも" }
     ],
     [
-      { bg: "town" },
+      { bg: "town_station" },
       { text: "（駅のホーム。案内係のAIが、また時刻表を貼り替えている）" },
       { who: "townAI", text: "本日も、定刻どおり運行しております" },
       { who: "player", text: "……おつかれさま" }
