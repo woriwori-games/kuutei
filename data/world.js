@@ -7,12 +7,16 @@ window.GAME_DATA = window.GAME_DATA || {};
 GAME_DATA.backgrounds = {
   black:     { color: "#000000", label: "", image: null },
   title:     { color: "#10141f", label: "", image: null },
-  capsule:   { color: "#1c2a33", label: "カプセルの中", image: null },
+  capsule:   { color: "#1c2a33", label: "カプセルの中", image: "assets/bg/bg_capsule.jpg" },
   ruins:     { color: "#2a2724", label: "廃墟の街", image: "assets/bg/bg_haikyo.jpg" },
   map:       { color: "#1b2330", label: "", image: null },
-  base:      { color: "#232a2e", label: "格納庫", image: null },
+  base:      { color: "#232a2e", label: "格納庫", image: "assets/bg/bg_base.jpg" },
+  // 駅以外の町の場面は、絵ができるまでこの仮の色を使う
   town:      { color: "#262b33", label: "町", image: null },
-  koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: null },
+  // 駅のホーム。時刻表の掲示板が真ん中より右にあるので、それが残るように右寄せ
+  town_station: { color: "#262b33", label: "駅のホーム", image: "assets/bg/bg_town_station.jpg", pos: "62% center" },
+  // 社長室。壁の額縁は空飛ぶ戦艦の設計図。社訓「UNKOからKOUNへ」の額縁は絵に映っていない別の壁にある
+  koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg" },
   // バーの絵には視火がすでに描いてある。バーの場面で視火の全身を上に重ねない
   // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ
   bar:       { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_wide.jpg", pos: "78% center" },
