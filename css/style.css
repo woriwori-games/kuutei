@@ -231,6 +231,13 @@ button:disabled { color: #555; border-color: #555; cursor: default; }
   color: #fff;
   text-shadow: 0 0 3px #000, 0 0 3px #000;
 }
+#face[hidden] { display: none; } /* 地の文のときは顔を出さない */
+/* 顔画像があるとき：縦長の画像を上寄せで枠に収める。背景は切り抜きの縁が目立たない明るい色で統一 */
+#face.has-image, .log-face.has-image {
+  background-color: #e8e4ef;
+  background-size: cover;
+  background-position: center top;
+}
 #msg-body { flex: 1; min-width: 0; }
 #speaker { color: var(--accent); font-size: 0.95rem; margin-bottom: 4px; min-height: 1.2em; }
 #text { font-size: 1.1rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
