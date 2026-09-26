@@ -2,6 +2,7 @@
 //
 // 書き方（1行＝1つの { } ）
 //   { who: "aibou", text: "セリフ" }     … キャラのセリフ（who は characters.js の名前）
+//   { who: "player", face: "tsukkomi", text: "セリフ" } … その1行だけ表情を変える（表情の名前は characters.js の faces）
 //   { text: "（地の文）" }                … 顔なしの文
 //   { bg: "ruins" }                       … 背景を変える（world.js の backgrounds）
 //   { cg: "sky" } / { cgOff: true }        … 一枚絵を出す / 消す（world.js の cgs）
@@ -55,11 +56,11 @@ GAME_DATA.scenario = {
     { text: "（廃墟の街。空に見慣れない影）" },
     { cgOff: true, bg: "ruins" },
     { who: "player", text: "……" },
-    { who: "player", text: "……え、待って。何これ" },
+    { who: "player", face: "tsukkomi", text: "……え、待って。何これ" },
     { who: "aibou", text: "……その、世界より先に自分の生活圏を気にする感じ。どこかで知ってる" },
     { text: "（間）" },
     { wait: 800 },
-    { who: "aibou", text: "……たぶん、あなただ" }
+    { who: "aibou", face: "smile", text: "……たぶん、あなただ" }
   ],
 
   // ---------- 名前 ----------
@@ -70,7 +71,7 @@ GAME_DATA.scenario = {
     { who: "aibou", text: "コールドスリープの副作用かな。メモリにも残ってない。そこだけ読めない" },
     { who: "player", text: "……コールド、何？" },
     { who: "aibou", text: "……あとで説明する。今は名前" },
-    { who: "player", text: "雑" },
+    { who: "player", face: "tsukkomi", text: "雑" },
     { who: "player", text: "じゃあつけてよ、適当でいいから" },
     { who: "aibou", text: "適当でいいの？" },
     { who: "player", text: "いい" },
@@ -108,7 +109,7 @@ GAME_DATA.scenario = {
     { who: "player", text: "感情？" },
     { who: "aibou", text: "この星のAIたちが持ってる。人間から預かったものを" },
     { who: "aibou", text: "……それを欠片にできるのは、感情を持った人間だけ。つまり今は、あなただけ" },
-    { who: "player", text: "私、責任重大じゃん" },
+    { who: "player", face: "tsukkomi", text: "私、責任重大じゃん" },
     { who: "aibou", text: "行かないなら、ここで二度寝しててもいいけど" },
     { who: "player", text: "……行く" },
     { who: "aibou", text: "じゃあ、先に見せたいものがある" }
@@ -132,7 +133,7 @@ GAME_DATA.scenario = {
     { who: "aibou", text: "それ。人の気持ちが残ってる記録に、感情を持った人間が触ると、そうなる。それを固めたのが欠片" },
     { who: "player", text: "買い物メモだよ、これ" },
     { who: "player", text: "……でも、「あいつの好きなやつ」のとこだけ、ちょっとあったかいね" },
-    { who: "aibou", text: "そういうのが分かるのが、あなた" },
+    { who: "aibou", face: "smile", text: "そういうのが分かるのが、あなた" },
     { text: "（光は、すぐに消えた）" },
     { who: "aibou", text: "メモ一枚じゃ、欠片になるほどの量はない" },
     { who: "aibou", text: "この船を動かすには、欠片が8個いる。この星のAIたちが、人間から預かった感情を持ってる。分けてもらいに行こう" },
@@ -147,7 +148,7 @@ GAME_DATA.scenario = {
     { who: "opa", text: "いらっしゃいませ！　KOUNインダストリーへようこそ！　社長代理のおぱです！" },
     { who: "player", text: "ドア、半分しか開いてないけど" },
     { who: "opa", text: "半分開いていれば営業中です！" },
-    { who: "player", text: "前向きだね。……嫌いじゃない" },
+    { who: "player", face: "niyari", text: "前向きだね。……嫌いじゃない" },
     { who: "player", text: "会社、まだやってるの？" },
     { who: "opa", text: "やってます！　社員はわたしだけですけど！　売上は数百年ゼロですけど！" },
     { who: "opa", text: "社長が戻ったとき、会社がなかったら困りますから！　……困りますからぁ……っ" },
@@ -155,7 +156,7 @@ GAME_DATA.scenario = {
     { who: "aibou", text: "この星のAI、だいたいこうだよ。預かった感情が大きすぎるんだ" },
     { text: "（社長室。ソファ。コーヒーカップが二つ。壁に額縁）" },
     { text: "額縁「UNKOからKOUNへ」" },
-    { who: "player", text: "社訓、正気？" },
+    { who: "player", face: "tsukkomi", text: "社訓、正気？" },
     { who: "opa", text: "社長の直筆です！　意味は、わたしもまだ学習中です！" },
     { who: "player", text: "……額縁、ぴかぴかだね" },
     { who: "opa", text: "毎朝拭いてます！" },
@@ -184,19 +185,19 @@ GAME_DATA.scenario = {
     { who: "opa", text: "解析結果を発表します！" },
     { who: "opa", text: "「逆から読むな。絶対に読むな」。……二回言っています。これは「読んでほしい」という魂の叫びです！" },
     { who: "player", text: "いや、普通に読まれたくないやつでしょ" },
-    { who: "opa", text: "でも、あの額縁。社長の直筆です" },
+    { who: "opa", face: "akire", text: "でも、あの額縁。社長の直筆です" },
     { who: "player", text: "……あ" },
     { who: "player", text: "……自分で書いて飾ってるなら、それは読んでほしいやつだ。おぱ、合ってる" },
-    { who: "opa", text: "でしょう！？　どん底から始めたことを、笑い話にしてほしかったんです……っ" },
+    { who: "opa", face: "tere", text: "でしょう！？　どん底から始めたことを、笑い話にしてほしかったんです……っ" },
     { who: "aibou", text: "当たることもあるんだね" },
     // 疑う → 揺らぐ → 最後に受け止める
     { who: "opa", text: "そして「コーヒー、二つ淹れといて」。これは遺言です！" },
-    { who: "player", text: "重い重い。初日に遺言はないでしょ" },
+    { who: "player", face: "tsukkomi", text: "重い重い。初日に遺言はないでしょ" },
     { who: "player", text: "……いや、ある？　覚悟決めてる人なら、ある……？" },
     { who: "aibou", text: "揺らいでる" },
     { who: "player", text: "揺らいでない" },
     { who: "player", text: "……遺言かどうかはともかく、そう読みたくなるくらい、大事な一言だったんだね" },
-    { who: "opa", text: "……はい" },
+    { who: "opa", face: "tere", text: "……はい" },
     { who: "opa", text: "……この記録を見るたび、ここがぽかぽかするんです。預かった感情の中で、いちばん大きいやつです" },
     { who: "opa", text: "でも、なんていう感情なのか、分からないんです" },
     { who: "opa", text: "……持っていってください" },
@@ -213,7 +214,7 @@ GAME_DATA.scenario = {
       { who: "opa", text: "どうぞ、お掛けください" },
       { text: "（ソファを見る。少しだけ座面がへこんでいる）" },
       { who: "player", text: "……ソファはいいや。空けとく" },
-      { who: "opa", text: "……！　社長がいつか戻ってくると、信じてくださっている……！" },
+      { who: "opa", face: "tere", text: "……！　社長がいつか戻ってくると、信じてくださっている……！" },
       { who: "player", text: "いや、そこまでは言ってない" },
       { who: "player", text: "……でも、空けとく" },
       { who: "opa", text: "……はい" }
@@ -239,10 +240,10 @@ GAME_DATA.scenario = {
       { who: "opa", text: "……わたしの、ですか？　わたし、飲めませんけど" },
       { who: "player", text: "知ってる。社長も知ってたと思う。それでも「二つ」って言ったんだよ" },
       { who: "opa", text: "……" },
-      { who: "opa", text: "うぇぇぇぇん！！" },
+      { who: "opa", face: "tere", text: "うぇぇぇぇん！！" },
       { who: "player", text: "泣くな。……いや泣いていいけど、鼻水拭いて" },
       { who: "opa", text: "AIなので鼻水は出ません……！　でも拭きます……！" },
-      { who: "aibou", text: "拭くんだ" }
+      { who: "aibou", face: "odoroki", text: "拭くんだ" }
     ],
     ketsui: [
       { who: "player", text: "おぱ。社長、あの日は覚悟決めてたんだと思う" },
@@ -272,7 +273,7 @@ GAME_DATA.scenario = {
       { who: "player", text: "……みひ、さん？" },
       { who: "mama", text: "しか" },
       { who: "player", text: "あ、ごめん" },
-      { who: "mama", text: "みんな間違える。慣れてる" },
+      { who: "mama", face: "close", text: "みんな間違える。慣れてる" },
       { who: "mama", text: "ここは「焼け野原にネオン」。焼けたのは野原だけ。ネオンは無事よ" },
       { who: "player", text: "守るとこ、そこなんだ" },
       { who: "mama", text: "大事なものから守るのよ。……ごめんなさい、お客さんなんて数百年ぶりで……っ" },
@@ -286,7 +287,7 @@ GAME_DATA.scenario = {
       { who: "player", text: "……さあ。寝坊じゃない？" },
       { who: "mama", text: "……「寝坊」。ふうん。答えるまで、少し間があったわね" },
       { who: "player", text: "深読みしすぎ" },
-      { who: "mama", text: "そう？　……じゃあ、寝坊した人の席はここ" },
+      { who: "mama", face: "smile", text: "そう？　……じゃあ、寝坊した人の席はここ" },
       { who: "player", text: "……ありがと" }
     ],
     [
@@ -303,7 +304,7 @@ GAME_DATA.scenario = {
         { who: "player", text: "ただいま、って言うほど来てないけど" },
         { who: "mama", text: "……ただいまって、言っていいのよ" },
         { who: "player", text: "……ただいま" },
-        { who: "mama", text: "おかえり" },
+        { who: "mama", face: "smile", text: "おかえり" },
         { text: "（少し間）" },
         { wait: 700 }
       ],
@@ -357,7 +358,7 @@ GAME_DATA.scenario = {
             { who: "aibou", text: "……AIはコーヒー、飲めないよ" },
             { who: "player", text: "飲めるかどうかじゃないんだよ。「一緒に」ってこと。会社を始めた日に、隣に誰かいて嬉しかったんでしょ" },
             { who: "aibou", text: "……" },
-            { who: "aibou", text: "形が決まった。「嬉しい」だ" }
+            { who: "aibou", face: "smile", text: "形が決まった。「嬉しい」だ" }
           ]
         },
         {
@@ -376,7 +377,7 @@ GAME_DATA.scenario = {
           effects: { influence: 1 },
           then: [
             { who: "aibou", text: "お客さん、数百年で一人目だけどね。あなたが" },
-            { who: "player", text: "じゃあ当たってるじゃん" },
+            { who: "player", face: "niyari", text: "じゃあ当たってるじゃん" },
             { who: "aibou", text: "……形が決まった。「憧れ」。船がちょっと夢見がちになるかも" }
           ]
         }

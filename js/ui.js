@@ -17,28 +17,85 @@ const UI = (() => {
     return text.replace(/\{name\}/g, () => name);
   }
 
-  // 仮の四角（色＋文字）か、画像を当てはめる
-  function paint(el, def) {
+  // ---------- 画像 ----------
+  // 画像が読み込めるか調べて、読み込めたら ok() を呼ぶ。結果は覚えておく（true / false）
+  const imgCache = {};
+  function whenLoaded(src, ok) {
+    if (imgCache[src] === true) return ok();
+    if (imgCache[src] === false) return;
+    const img = new Image();
+    img.onload = () => { imgCache[src] = true; ok(); };
+    img.onerror = () => { imgCache[src] = false; };
+    img.src = src;
+  }
+
+  // 使う画像を先に読み込んでおく（場面が変わるたびに仮の四角がチラつかないように）
+  function preload() {
+    const noop = () => {};
+    for (const id in D.characters) {
+      const faces = D.characters[id].faces || {};
+      for (const f in faces) whenLoaded(faces[f], noop);
+    }
+    for (const id in D.backgrounds) if (D.backgrounds[id].image) whenLoaded(D.backgrounds[id].image, noop);
+    for (const id in D.cgs) if (D.cgs[id].image) whenLoaded(D.cgs[id].image, noop);
+  }
+
+  // まず仮の画面（色＋文字）を出し、画像が読み込めたら差し替える。読み込めなければ仮のまま
+  function paint(el, def, labelEl, labelText) {
+    el.dataset.src = def.image || "";
     el.style.backgroundImage = "";
     el.style.backgroundColor = def.color || "#000";
-    if (def.image) {
+    el.style.backgroundPosition = def.pos || "center";
+    labelEl.textContent = labelText || "";
+    if (!def.image) return;
+    whenLoaded(def.image, () => {
+      if (el.dataset.src !== def.image) return; // もう別の背景に変わっていたら何もしない
       el.style.backgroundImage = `url("${def.image}")`;
-    }
+      labelEl.textContent = "";
+    });
   }
 
   function setBg(id) {
     const def = D.backgrounds[id] || D.backgrounds.black;
+    paint($("bg"), def, $("bg-label"), def.label);
+  }
+
+  // 背景を from の位置から to の位置まで、ms ミリ秒かけてゆっくり流す（終わるまで待つ）
+  // 画像が読み込めないときは流さずに、そのまま to の位置で止まった状態にする
+  async function panBg(id, from, to, ms) {
+    const def = D.backgrounds[id];
+    setBg(id);
     const el = $("bg");
-    paint(el, def);
-    $("bg-label").textContent = def.image ? "" : def.label;
+    if (!def.image) return;
+    const loaded = await new Promise((resolve) => {
+      whenLoaded(def.image, () => resolve(true));
+      setTimeout(() => resolve(imgCache[def.image] === true), 2000);
+    });
+    if (!loaded) return;
+    el.style.transition = "none";
+    el.style.backgroundPosition = from;
+    void el.offsetWidth; // いったん from の位置で描いてから流し始める
+    el.style.transition = `background-position ${ms}ms ease-in-out`;
+    el.style.backgroundPosition = to;
+    await sleep(ms);
+    el.style.transition = "";
+  }
+
+  // 会話ウィンドウのすぐ上に出す看板（「本日のおすすめ」など）
+  function showSign(text) {
+    const el = $("sign");
+    el.textContent = text;
+    el.classList.remove("hidden");
+  }
+
+  function hideSign() {
+    $("sign").classList.add("hidden");
   }
 
   function showCg(id) {
     const def = D.cgs[id];
-    const el = $("cg");
-    paint(el, def);
-    $("cg-caption").textContent = def.image ? "" : def.caption;
-    el.classList.add("show");
+    paint($("cg"), def, $("cg-caption"), def.caption);
+    $("cg").classList.add("show");
   }
 
   function hideCg() {
@@ -69,20 +126,35 @@ const UI = (() => {
     el.classList.add("show");
   }
 
-  // 顔アイコン（仮の四角＋文字か、画像）を塗る
-  function paintFace(el, c) {
-    el.style.backgroundColor = c.color;
-    el.style.backgroundImage = c.image
-      ? `url("${c.image}")`
-      : `linear-gradient(135deg, transparent 70%, ${c.accent} 70%)`;
-    el.textContent = c.image ? "" : c.label;
+  // 表情の名前から顔画像のパスを決める（無い表情ならふだんの表情）
+  function facePath(c, face) {
+    if (!c.faces) return null;
+    return c.faces[face] || c.faces[c.face] || null;
   }
 
-  function setFace(who) {
-    const face = $("face");
+  // 顔アイコンを塗る。まず仮の四角＋文字、画像が読み込めたら差し替える
+  function paintFace(el, c, face) {
+    const src = facePath(c, face);
+    el.dataset.src = src || "";
+    el.classList.remove("has-image");
+    el.style.backgroundColor = c.color;
+    el.style.backgroundImage = `linear-gradient(135deg, transparent 70%, ${c.accent} 70%)`;
+    el.textContent = c.label;
+    if (!src) return;
+    whenLoaded(src, () => {
+      if (el.dataset.src !== src) return;
+      el.classList.add("has-image");
+      el.style.backgroundColor = "";
+      el.style.backgroundImage = `url("${src}")`;
+      el.textContent = "";
+    });
+  }
+
+  function setFace(who, face) {
+    const el = $("face");
     const c = who && D.characters[who];
-    face.hidden = !c;
-    if (c) paintFace(face, c);
+    el.hidden = !c;
+    if (c) paintFace(el, c, face);
   }
 
   // ---------- ログ（スレを遡る） ----------
@@ -123,7 +195,7 @@ const UI = (() => {
         if (c) {
           const face = document.createElement("div");
           face.className = "log-face";
-          paintFace(face, c);
+          paintFace(face, c, e.face);
           row.appendChild(face);
         }
         const body = document.createElement("div");
@@ -151,18 +223,19 @@ const UI = (() => {
   }
 
   // セリフを一文字ずつ出し、クリックを待つ
-  async function say(who, text) {
+  // face を書くと、その1行だけその表情になる
+  async function say(who, text, face) {
     const msg = $("msg");
     const body = $("text");
     const c = who && D.characters[who];
     $("speaker").textContent = c ? fillName(c.name) : "";
-    setFace(who);
+    setFace(who, face);
     msg.classList.remove("hidden");
     msg.classList.toggle("narration", !c);
     msg.classList.remove("waiting");
 
     const full = fillName(text);
-    addLog({ who: c ? who : null, name: c ? fillName(c.name) : "", text: full });
+    addLog({ who: c ? who : null, face, name: c ? fillName(c.name) : "", text: full });
     let shown = 0;
     let skip = false;
     body.textContent = "";
@@ -268,6 +341,7 @@ const UI = (() => {
   }
 
   function init() {
+    preload();
     const advance = () => { if (onAdvance && !isLogOpen()) onAdvance(); };
     $("game").addEventListener("click", advance);
 
@@ -293,7 +367,7 @@ const UI = (() => {
   }
 
   return {
-    sleep, fillName, setBg, showCg, hideCg, flash, shake, toast,
+    sleep, fillName, setBg, panBg, showSign, hideSign, showCg, hideCg, flash, shake, toast,
     say, hideMsg, choose, input, setStage, waitButtons, init,
     clearLog, showLogButton
   };

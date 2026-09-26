@@ -10,7 +10,7 @@ async function play(steps, ctx = {}) {
       UI.hideMsg();
       await UI.sleep(s.wait);
     }
-    if (s.text !== undefined) await UI.say(s.who || null, s.text);
+    if (s.text !== undefined) await UI.say(s.who || null, s.text, s.face);
     if (s.choice) {
       const i = await UI.choose(s.choice);
       const opt = s.choice[i];

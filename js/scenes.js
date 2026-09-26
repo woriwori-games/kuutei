@@ -184,7 +184,9 @@ const Scenes = (() => {
     const s = S();
     s.visits.mama++;
     const sign = () => pickByCount(D.signboard, s.progress);
-    UI.setStage(`<div class="signboard">${sign().text}</div>`);
+    // 入店の演出：絵の左端（ネオン看板）から、視火が映る位置までゆっくり流す。止まるまで会話は始めない
+    UI.hideMsg();
+    await UI.panBg("bar", "0% center", D.backgrounds.bar.pos, 3000);
     await play(sc.barEnter);
     while (true) {
       UI.hideMsg();
@@ -211,10 +213,12 @@ const Scenes = (() => {
           await play(sc.mamaNoSave);
         }
       } else if (i === 1) {
+        // 看板は見ているあいだだけ出す
+        UI.showSign(sign().text);
         await UI.say(null, `看板「${sign().text}」`);
         await UI.say("player", sign().comment);
+        UI.hideSign();
       } else {
-        UI.setStage("");
         return "map";
       }
     }

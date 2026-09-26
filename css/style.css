@@ -141,8 +141,12 @@ button:disabled { color: #555; border-color: #555; cursor: default; }
 .small { align-self: center; font-size: 0.85rem; padding: 6px 14px; border-width: 1px; border-style: solid; color: var(--muted); }
 
 /* 看板 */
+/* 看板は会話ウィンドウのすぐ上（#bottom の中）に出す。視火の顔にかからないように */
+#sign {
+  align-self: center;
+  max-width: 100%;
+}
 .signboard {
-  margin-top: 8%;
   padding: 12px 18px;
   border: 2px solid #f687b3;
   border-radius: 8px;
@@ -230,6 +234,13 @@ button:disabled { color: #555; border-color: #555; cursor: default; }
   font-weight: bold;
   color: #fff;
   text-shadow: 0 0 3px #000, 0 0 3px #000;
+}
+#face[hidden] { display: none; } /* 地の文のときは顔を出さない */
+/* 顔画像があるとき：縦長の画像を上寄せで枠に収める。背景は切り抜きの縁が目立たない明るい色で統一 */
+#face.has-image, .log-face.has-image {
+  background-color: #e8e4ef;
+  background-size: cover;
+  background-position: center top;
 }
 #msg-body { flex: 1; min-width: 0; }
 #speaker { color: var(--accent); font-size: 0.95rem; margin-bottom: 4px; min-height: 1.2em; }
