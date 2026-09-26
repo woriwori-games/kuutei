@@ -3,6 +3,7 @@ const UI = (() => {
   const $ = (id) => document.getElementById(id);
   const D = window.GAME_DATA;
   const TYPE_SPEED = 35; // 一文字にかける時間（ミリ秒）
+  const LOG_MAX = 200;   // ログに残す数（古いものから消える）
 
   // 決定待ちのときに呼ぶ関数（クリック・キーで進める）
   let onAdvance = null;
@@ -59,19 +60,85 @@ const UI = (() => {
     el.classList.add("show");
   }
 
+  // 顔アイコン（仮の四角＋文字か、画像）を塗る
+  function paintFace(el, c) {
+    el.style.backgroundColor = c.color;
+    el.style.backgroundImage = c.image
+      ? `url("${c.image}")`
+      : `linear-gradient(135deg, transparent 70%, ${c.accent} 70%)`;
+    el.textContent = c.image ? "" : c.label;
+  }
+
   function setFace(who) {
     const face = $("face");
     const c = who && D.characters[who];
-    if (!c) {
-      face.hidden = true;
-      return;
+    face.hidden = !c;
+    if (c) paintFace(face, c);
+  }
+
+  // ---------- ログ（スレを遡る） ----------
+  // { who, name, text } か { choice: "選んだ文字" } を古い順にためる
+  const logEntries = [];
+
+  function addLog(entry) {
+    logEntries.push(entry);
+    if (logEntries.length > LOG_MAX) logEntries.shift();
+  }
+
+  function clearLog() {
+    logEntries.length = 0;
+  }
+
+  function showLogButton(show) {
+    $("log-btn").classList.toggle("hidden", !show);
+  }
+
+  function isLogOpen() {
+    return !$("log").classList.contains("hidden");
+  }
+
+  function openLog() {
+    const list = $("log-list");
+    list.innerHTML = "";
+    if (logEntries.length === 0) {
+      list.innerHTML = `<p class="log-empty">まだ何もない</p>`;
     }
-    face.hidden = false;
-    face.style.backgroundColor = c.color;
-    face.style.backgroundImage = c.image
-      ? `url("${c.image}")`
-      : `linear-gradient(135deg, transparent 70%, ${c.accent} 70%)`;
-    face.textContent = c.image ? "" : c.label;
+    for (const e of logEntries) {
+      const row = document.createElement("div");
+      if (e.choice) {
+        row.className = "log-row log-choice";
+        row.textContent = "▶ " + e.choice;
+      } else {
+        row.className = "log-row" + (e.who ? "" : " log-narration");
+        const c = e.who && D.characters[e.who];
+        if (c) {
+          const face = document.createElement("div");
+          face.className = "log-face";
+          paintFace(face, c);
+          row.appendChild(face);
+        }
+        const body = document.createElement("div");
+        body.className = "log-body";
+        if (c) {
+          const name = document.createElement("div");
+          name.className = "log-name";
+          name.textContent = e.name;
+          body.appendChild(name);
+        }
+        const text = document.createElement("div");
+        text.className = "log-text";
+        text.textContent = e.text;
+        body.appendChild(text);
+        row.appendChild(body);
+      }
+      list.appendChild(row);
+    }
+    $("log").classList.remove("hidden");
+    list.scrollTop = list.scrollHeight; // いちばん新しいところから、上へ遡る
+  }
+
+  function closeLog() {
+    $("log").classList.add("hidden");
   }
 
   // セリフを一文字ずつ出し、クリックを待つ
@@ -86,6 +153,7 @@ const UI = (() => {
     msg.classList.remove("waiting");
 
     const full = fillName(text);
+    addLog({ who: c ? who : null, name: c ? fillName(c.name) : "", text: full });
     let shown = 0;
     let skip = false;
     body.textContent = "";
@@ -143,6 +211,7 @@ const UI = (() => {
             e.stopPropagation();
             box.classList.add("hidden");
             box.innerHTML = "";
+            addLog({ choice: fillName(opt.label) });
             resolve(i);
           });
         }
@@ -190,9 +259,22 @@ const UI = (() => {
   }
 
   function init() {
-    const advance = () => { if (onAdvance) onAdvance(); };
+    const advance = () => { if (onAdvance && !isLogOpen()) onAdvance(); };
     $("game").addEventListener("click", advance);
+
+    // ログを開いている間は、会話が進まないようにクリックを止める
+    $("log-btn").addEventListener("click", (e) => { e.stopPropagation(); openLog(); });
+    $("log").addEventListener("click", (e) => e.stopPropagation());
+    $("log-close").addEventListener("click", closeLog);
+
     document.addEventListener("keydown", (e) => {
+      if (isLogOpen()) {
+        if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          closeLog();
+        }
+        return;
+      }
       if (e.target.tagName === "INPUT") return;
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -203,6 +285,7 @@ const UI = (() => {
 
   return {
     sleep, fillName, setBg, showCg, hideCg, flash, toast,
-    say, hideMsg, choose, input, setStage, waitButtons, init
+    say, hideMsg, choose, input, setStage, waitButtons, init,
+    clearLog, showLogButton
   };
 })();

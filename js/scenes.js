@@ -19,6 +19,7 @@ const Scenes = (() => {
   }
 
   async function title() {
+    UI.showLogButton(false);
     UI.hideMsg();
     UI.hideCg();
     UI.setBg("title");
@@ -33,6 +34,8 @@ const Scenes = (() => {
       </div>`);
     const go = await UI.waitButtons(root);
     UI.setStage("");
+    UI.clearLog();
+    UI.showLogButton(true);
     if (go === "continue" && Game.load()) return "map";
     Game.reset();
     return "wake";
