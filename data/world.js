@@ -1,29 +1,33 @@
 // 背景・一枚絵・地図・看板・欠片・空挺・相棒のメモリなど、世界の中身。
 // image に絵のパスを書くと差し替わる（読み込めないときは color と label の仮の画面に戻る）。
 // pos は絵のどこを画面の中心にするか（CSS の background-position と同じ書き方。省略すると "center"）。
+// zoom はスマホ縦（画面の高さが幅の1.3倍より大きいとき）の大きさ（画面の横幅の何倍か）。
+//   スマホ縦では、絵を画面の上の方（会話ウィンドウにかからない位置）に zoom 倍で置いて、pos の位置を画面の真ん中にする。
+//   まわりの空いたところは、同じ絵をぼかして暗くしたもので埋める。パソコンでは今までどおり画面いっぱい。
 window.GAME_DATA = window.GAME_DATA || {};
 
 // 背景（絵は assets/bg/ にある）
 GAME_DATA.backgrounds = {
   black:     { color: "#000000", label: "", image: null },
   title:     { color: "#10141f", label: "", image: null },
-  capsule:   { color: "#1c2a33", label: "カプセルの中", image: "assets/bg/bg_capsule.jpg" },
-  ruins:     { color: "#2a2724", label: "廃墟の街", image: "assets/bg/bg_haikyo.jpg" },
+  capsule:   { color: "#1c2a33", label: "カプセルの中", image: "assets/bg/bg_capsule.jpg", zoom: 1.6 },
+  ruins:     { color: "#2a2724", label: "廃墟の街", image: "assets/bg/bg_haikyo.jpg", zoom: 1.6 },
   map:       { color: "#1b2330", label: "", image: null },
-  base:      { color: "#232a2e", label: "格納庫", image: "assets/bg/bg_base.jpg" },
+  base:      { color: "#232a2e", label: "格納庫", image: "assets/bg/bg_base.jpg", zoom: 1.6 },
   // 駅以外の町の場面は、絵ができるまでこの仮の色を使う
   town:      { color: "#262b33", label: "町", image: null },
   // 駅のホーム。時刻表の掲示板が真ん中より右にあるので、それが残るように右寄せ
-  town_station: { color: "#262b33", label: "駅のホーム", image: "assets/bg/bg_town_station.jpg", pos: "62% center" },
+  town_station: { color: "#262b33", label: "駅のホーム", image: "assets/bg/bg_town_station.jpg", pos: "62% center", zoom: 1.6 },
   // 社長室。壁の額縁は空飛ぶ戦艦の設計図。社訓「UNKOからKOUNへ」の額縁は絵に映っていない別の壁にある
   // 廃校の美術室（山田）。顔の絵が並ぶ壁とイーゼルが中央にある
-  yamada:    { color: "#2e2a26", label: "廃校の美術室", image: "assets/bg/bg_yamada.jpg", pos: "center" },
-  koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg", pos: "35% center" }, // スマホでも左の壁の設計図が見えるように
+  yamada:    { color: "#2e2a26", label: "廃校の美術室", image: "assets/bg/bg_yamada.jpg", pos: "center", zoom: 1.6 },
+  koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg", pos: "35% center", zoom: 1.6 }, // スマホでも左の壁の設計図が見えるように
   // バーの絵には視火がすでに描いてある。バーの場面で視火の全身を上に重ねない
-  // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ
-  bar:       { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_wide.jpg", pos: "78% center" },
+  // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ。
+  // スマホ縦の zoom だけ例外で大きめ（視火が大きすぎず、顔が切れない大きさ）
+  bar:       { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_wide.jpg", pos: "78% center", zoom: 2.6 },
   // 隠し欠片「心の傷」の場面専用（看板に「本日のおすすめ 心の傷に、強めの一杯を。」）。今は使わない
-  bar_secret: { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_square.jpg" }
+  bar_secret: { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_square.jpg", zoom: 1.0 } // 正方形の絵なので横幅いっぱい
 };
 
 // 一枚絵（大事な場面で全画面表示。絵は assets/cg/）

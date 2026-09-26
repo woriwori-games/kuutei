@@ -39,16 +39,68 @@ const Scenes = (() => {
         <div class="menu">
           <button data-go="new">はじめから</button>
           <button data-go="continue" ${Game.hasSave() ? "" : "disabled"}>つづきから</button>
+          ${TEST_MODE ? '<button data-go="warp" class="warp">ワープ（テスト用）</button>' : ""}
         </div>
       </div>`);
     const go = await UI.waitButtons(root);
     BGM.unlock(); // 「はじめから」「つづきから」を押したときに、音を鳴らせるようにする
     UI.setStage("");
     UI.clearLog();
+    if (go === "warp") return warp();
     UI.showLogButton(true);
     if (go === "continue" && Game.load()) return "map";
     Game.reset();
     return "wake";
+  }
+
+  // ---------- テスト用のワープ ----------
+  // URL に ?test を付けて開いたときだけ、タイトル画面に「ワープ」が出る
+  // 選んだ場面の直前から始める。名前は「テスト」、必要な欠片や進行度は自動で用意する。ワープで始めたときはセーブしない
+  const TEST_MODE = new URLSearchParams(location.search).has("test");
+
+  // おぱの欠片を「嬉しい」で推進にはめ終わった状態にする
+  function warpAfterOpa(s) {
+    s.flags.metOpa = true;
+    s.flags.toldOpa = true;
+    s.choices.koun0412_reading = "ureshii";
+    s.ship.propulsion.push({ id: "ureshii", tuning: "strong" });
+    s.emotions.dou = 1;
+    s.partnerMemory = 1;
+    s.progress = 2;
+    s.flags.firstTravel = true;
+  }
+
+  const WARPS = [
+    { label: "目覚め", go: "wake", setup: () => {} },
+    { label: "格納庫（最初）", go: "hangar", setup: () => {} },
+    { label: "地図（最初）", go: "map", setup: () => {} },
+    { label: "KOUNで初めておぱに会う", go: "koun", setup: () => {} },
+    { label: "錬金（おぱの欠片）", go: "base", setup: (s) => {
+      s.flags.metOpa = true;
+      s.fragments.push("koun0412");
+      s.progress = 1;
+    } },
+    { label: "焼け野原にネオンの入店", go: "bar", setup: () => {} },
+    { label: "美術室で初めて山田に会う", go: "yamada", setup: warpAfterOpa },
+    { label: "錬金（山田の欠片）", go: "base", setup: (s) => {
+      warpAfterOpa(s);
+      s.flags.metYamada = true;
+      s.fragments.push("yamada");
+    } }
+  ];
+
+  async function warp() {
+    const i = await UI.choose([...WARPS.map((w) => ({ label: w.label })), { label: "やめる" }]);
+    if (i >= WARPS.length) return "title";
+    const w = WARPS[i];
+    Game.reset();
+    Game.testMode = true;
+    const s = S();
+    if (w.go !== "wake") s.playerName = "テスト";
+    w.setup(s);
+    UI.showLogButton(true);
+    UI.toast("ワープ中（セーブしません）");
+    return w.go;
   }
 
   async function wake() {
@@ -256,7 +308,7 @@ const Scenes = (() => {
     // 入店の演出：絵の左端（ネオン看板）から、視火が映る位置までゆっくり流す。止まるまで会話は始めない
     UI.hideMsg();
     BGM.scene("bar");
-    await UI.panBg("bar", "0% center", D.backgrounds.bar.pos, 3000);
+    await UI.panBg("bar", "0% center", 3000);
     await play(sc.barEnter);
     while (true) {
       UI.hideMsg();
@@ -273,7 +325,10 @@ const Scenes = (() => {
         await play(talk.saveAsk || sc.mamaSaveAsk);
         const k = await UI.choose([{ label: "覚えておいて（セーブ）" }, { label: "またこんど" }]);
         if (k === 0) {
-          if (Game.save()) {
+          if (Game.testMode) {
+            UI.toast("ワープ中なのでセーブしません");
+            await play(sc.mamaSaved);
+          } else if (Game.save()) {
             UI.toast("セーブしました");
             await play(sc.mamaSaved);
           } else {

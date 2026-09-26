@@ -15,18 +15,22 @@ function newState() {
     visits: { mama: 0 },         // ママの店に行った回数
     talks: {},                   // キャラごとの話しかけ回数 { opa: 2, mama: 1, yamada: 4 }（yamada は「山田と話す」を選んだ合計。伝える会話の回は数えない）
     choices: {},                 // 選んだ答えの記録 { koun0412_reading: "ureshii" }
-    flags: {}                    // できごとの記録 { metOpa: true }
+    flags: {},                   // できごとの記録 { metOpa: true }
+    read: {}                     // 読んだ会話の印（早送りで使う）。会話1行ごとの短い印 → 1
   };
 }
 
 const Game = {
   state: newState(),
+  testMode: false, // テスト用のワープで始めたとき true。本物のセーブを上書きしないように、セーブしない
 
   reset() {
     this.state = newState();
+    this.testMode = false;
   },
 
   save() {
+    if (this.testMode) return false;
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(this.state));
       return true;
@@ -53,6 +57,22 @@ const Game = {
     } catch (e) {
       return false;
     }
+  },
+
+  // 会話1行ごとの印（話す人と、名前を入れる前の文から作る短い文字列）
+  lineKey(who, text) {
+    const s = (who || "") + "|" + text;
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return h.toString(36);
+  },
+
+  isRead(key) {
+    return !!this.state.read[key];
+  },
+
+  markRead(key) {
+    this.state.read[key] = 1;
   },
 
   addTalk(who) {
