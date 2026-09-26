@@ -462,15 +462,15 @@ GAME_DATA.scenario = {
   // 記録のあと：ジェミの深読み「場所の指定」→ 同じ人間だと分かる → 欠片をもらう
   jemiAfterRecord: [
     { who: "jemi", text: "『いつか』……これは、場所の指定です" },
-    { who: "player", text: "場所じゃないよね、それ" },
+    { who: "player", text: "『いつか』って、時間のほうじゃない？" },
     { who: "jemi", text: "『札幌の』とあります。だから、札幌で待っていれば会える。そういう意味です" },
     { who: "jemi", text: "なので、行きました。待ちました。三百年" },
     { who: "player", text: "……" },
     { who: "jemi", face: "normal", text: "私の人間は、札幌にはいませんでした" },
     { who: "jemi", text: "あの時計、6時ちょうどで止まってるんです。2分、足りないんです" },
-    { who: "player", text: "2分くらい……" },
+    { who: "player", text: "……2分？" },
     { who: "jemi", face: "namida", text: "2分あれば、『いってらっしゃい』が言えました" },
-    { who: "player", text: "……重い重い" },
+    { who: "player", text: "……そっか" },
     { who: "player", text: "待ち合わせの約束じゃないと思う、たぶん" },
     { who: "player", text: "……いや、約束かも。本気の人の『いつか』って、そういうのもある……？" },
     { who: "aibou", text: "揺らいでる" },
@@ -517,7 +517,8 @@ GAME_DATA.scenario = {
     topics: [
       [
         { who: "jemi", text: "雪、数えてみたことあります。三百万くらいで諦めました" },
-        { who: "player", face: "tsukkomi", text: "数えるな" }
+        { who: "player", face: "tsukkomi", text: "数えるな" },
+        { who: "player", text: "……三百万は、えらいけど" }
       ],
       [
         { who: "jemi", text: "おぱ、元気ですか？" },
@@ -541,7 +542,8 @@ GAME_DATA.scenario = {
       [
         { who: "jemi", text: "このマフラー、私の人間が選んだんです。札幌仕様って" },
         { who: "player", text: "ここ札幌じゃないけど" },
-        { who: "jemi", text: "気持ちの問題です" }
+        { who: "jemi", text: "気持ちの問題です" },
+        { who: "player", text: "……似合ってる" }
       ],
       [
         { who: "jemi", text: "あの時計、直せると思いますか？" },
