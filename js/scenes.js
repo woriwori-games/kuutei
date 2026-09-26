@@ -195,8 +195,10 @@ const Scenes = (() => {
       ]);
       if (i === 0) {
         const n = Game.addTalk("mama");
-        await play(pickByCount(sc.mamaTalks, n - 1));
-        await play(sc.mamaSaveAsk);
+        // 会話は [ ... ] か、確認のセリフを差し替える { steps, saveAsk } のどちらか
+        const talk = pickByCount(sc.mamaTalks, n - 1);
+        await play(talk.steps || talk);
+        await play(talk.saveAsk || sc.mamaSaveAsk);
         const k = await UI.choose([{ label: "覚えておいて（セーブ）" }, { label: "またこんど" }]);
         if (k === 0) {
           if (Game.save()) {
@@ -237,7 +239,11 @@ const Scenes = (() => {
 
     UI.setStage(shipHtml());
     UI.flash();
+    // 少しだけ薄めた欠片は元気すぎて、骨組みが一度だけ震える
+    const light = ctx.tuning === "light";
+    if (light) UI.shake(".ship");
     await UI.say(null, `欠片「${frag.name}」が、空挺の「${part.name}」にはまった`);
+    if (light) await play(sc.tuningLightAfter);
 
     // 相棒のメモリが一つ戻る
     const m = s.partnerMemory;

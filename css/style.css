@@ -388,6 +388,14 @@ button:disabled { color: #555; border-color: #555; cursor: default; }
 @keyframes toast { 0% { opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes blink { 50% { opacity: 0; } }
 @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+.jolt { animation: jolt 0.45s ease-out; }
+@keyframes jolt {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  15% { transform: translate(-6px, 3px) rotate(-1deg); }
+  35% { transform: translate(5px, -2px) rotate(0.8deg); }
+  55% { transform: translate(-3px, 1px) rotate(-0.4deg); }
+  75% { transform: translate(2px, 0) rotate(0.2deg); }
+}
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-4px); }
