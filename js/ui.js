@@ -18,40 +18,96 @@ const UI = (() => {
   }
 
   // ---------- 画像 ----------
-  // 画像が読み込めるか調べて、読み込めたら ok() を呼ぶ。結果は覚えておく（true / false）
-  const imgCache = {};
-  function whenLoaded(src, ok) {
-    if (imgCache[src] === true) return ok();
-    if (imgCache[src] === false) return;
+  // 画像の読み込み
+  // - 読み込めたら ok()、読み直してもだめなら ng() を呼ぶ
+  // - 失敗したら少し間をあけて、2回まで読み直す
+  // - 前に失敗した画像は、次に頼まれたときにもう一度だけ試す
+  // - 読み込み中に同じ画像を頼まれたら、新しく読み込まずに終わるのを待つ（待っている全員に知らせる）
+  const RETRY_MAX = 2;      // 読み直す回数
+  const RETRY_WAIT = 800;   // 読み直すまでの間（ミリ秒）
+  const imgState = {};      // 画像 → "ok"（読めた）/ "failed"（だめだった）
+  const imgWaiting = {};    // 読み込み中の画像 → 終わるのを待っている人たち
+
+  function loadImage(src, ok, ng) {
+    if (imgState[src] === "ok") return ok();
+    if (imgWaiting[src]) {
+      imgWaiting[src].push({ ok, ng });
+      return;
+    }
+    imgWaiting[src] = [{ ok, ng }];
+    tryLoad(src, imgState[src] === "failed" ? 0 : RETRY_MAX);
+  }
+
+  function tryLoad(src, retriesLeft) {
     const img = new Image();
-    img.onload = () => { imgCache[src] = true; ok(); };
-    img.onerror = () => { imgCache[src] = false; };
+    img.onload = () => finishLoad(src, true);
+    img.onerror = () => {
+      if (retriesLeft > 0) setTimeout(() => tryLoad(src, retriesLeft - 1), RETRY_WAIT);
+      else finishLoad(src, false);
+    };
     img.src = src;
   }
 
-  // 使う画像を先に読み込んでおく（場面が変わるたびに仮の四角がチラつかないように）
-  function preload() {
-    const noop = () => {};
-    for (const id in D.characters) {
-      const faces = D.characters[id].faces || {};
-      for (const f in faces) whenLoaded(faces[f], noop);
+  function finishLoad(src, loaded) {
+    imgState[src] = loaded ? "ok" : "failed";
+    const waiting = imgWaiting[src];
+    delete imgWaiting[src];
+    for (const w of waiting) {
+      if (loaded) w.ok();
+      else if (w.ng) w.ng();
     }
-    for (const id in D.backgrounds) if (D.backgrounds[id].image) whenLoaded(D.backgrounds[id].image, noop);
-    for (const id in D.cgs) if (D.cgs[id].image) whenLoaded(D.cgs[id].image, noop);
   }
 
-  // まず仮の画面（色＋文字）を出し、画像が読み込めたら差し替える。読み込めなければ仮のまま
+  // 読み込めたら true、だめなら false になる形
+  function loadImageP(src) {
+    return new Promise((resolve) => loadImage(src, () => resolve(true), () => resolve(false)));
+  }
+
+  // 使う画像を先に読み込んでおく。最初に出る player と aibou の顔、廃墟の背景を先に。
+  // それが終わってから、残りのキャラと背景
+  let firstReady = Promise.resolve();
+  async function preload() {
+    const faceList = (id) => Object.values(D.characters[id].faces || {});
+    const firstFaces = [...faceList("player"), ...faceList("aibou")];
+    const first = [...firstFaces, D.backgrounds.ruins.image];
+    // 顔を真っ先に。回線を取り合わないように、背景は顔のあと
+    firstReady = Promise.all(firstFaces.map(loadImageP));
+    await firstReady;
+    await loadImageP(D.backgrounds.ruins.image);
+
+    const rest = [];
+    for (const id in D.characters) {
+      if (id !== "player" && id !== "aibou") rest.push(...faceList(id));
+    }
+    for (const id in D.backgrounds) if (D.backgrounds[id].image) rest.push(D.backgrounds[id].image);
+    for (const id in D.cgs) if (D.cgs[id].image) rest.push(D.cgs[id].image);
+    await Promise.all(rest.filter((src) => !first.includes(src)).map(loadImageP));
+  }
+
+  // 最初に出る顔（player と aibou）の読み込みを、最大 ms ミリ秒だけ待つ
+  function waitFirstImages(ms) {
+    return Promise.race([firstReady, sleep(ms)]);
+  }
+
+  // 背景・一枚絵を塗る
+  // - 画像がある場所：読み込み中は色だけ（場所の名前は出さない）。読めたら絵にする。読み直してもだめなら名前を出す
+  // - 画像がない場所：色と名前
   function paint(el, def, labelEl, labelText) {
     el.dataset.src = def.image || "";
     el.style.backgroundImage = "";
     el.style.backgroundColor = def.color || "#000";
     el.style.backgroundPosition = def.pos || "center";
-    labelEl.textContent = labelText || "";
-    if (!def.image) return;
-    whenLoaded(def.image, () => {
+    if (!def.image) {
+      labelEl.textContent = labelText || "";
+      return;
+    }
+    labelEl.textContent = "";
+    loadImage(def.image, () => {
       if (el.dataset.src !== def.image) return; // もう別の背景に変わっていたら何もしない
       el.style.backgroundImage = `url("${def.image}")`;
-      labelEl.textContent = "";
+    }, () => {
+      if (el.dataset.src !== def.image) return;
+      labelEl.textContent = labelText || "";
     });
   }
 
@@ -67,10 +123,8 @@ const UI = (() => {
     setBg(id);
     const el = $("bg");
     if (!def.image) return;
-    const loaded = await new Promise((resolve) => {
-      whenLoaded(def.image, () => resolve(true));
-      setTimeout(() => resolve(imgCache[def.image] === true), 2000);
-    });
+    // 読み込みを待つ（回線が遅いときは4秒まで。それを過ぎたら流さない）
+    const loaded = await Promise.race([loadImageP(def.image), sleep(4000).then(() => false)]);
     if (!loaded) return;
     el.style.transition = "none";
     el.style.backgroundPosition = from;
@@ -132,21 +186,28 @@ const UI = (() => {
     return c.faces[face] || c.faces[c.face] || null;
   }
 
-  // 顔アイコンを塗る。まず仮の四角＋文字、画像が読み込めたら差し替える
+  // 顔アイコンを塗る
+  // - 画像があるキャラ：読み込み中は明るい無地の枠。読めたら顔。読み直してもだめなら仮の四角＋文字
+  // - 画像がないキャラ：仮の四角＋文字
   function paintFace(el, c, face) {
     const src = facePath(c, face);
     el.dataset.src = src || "";
-    el.classList.remove("has-image");
-    el.style.backgroundColor = c.color;
-    el.style.backgroundImage = `linear-gradient(135deg, transparent 70%, ${c.accent} 70%)`;
-    el.textContent = c.label;
-    if (!src) return;
-    whenLoaded(src, () => {
-      if (el.dataset.src !== src) return;
-      el.classList.add("has-image");
-      el.style.backgroundColor = "";
+    const placeholder = () => {
+      el.classList.remove("has-image");
+      el.style.backgroundColor = c.color;
+      el.style.backgroundImage = `linear-gradient(135deg, transparent 70%, ${c.accent} 70%)`;
+      el.textContent = c.label;
+    };
+    if (!src) return placeholder();
+    el.classList.add("has-image");
+    el.style.backgroundColor = "";
+    el.style.backgroundImage = "";
+    el.textContent = "";
+    loadImage(src, () => {
+      if (el.dataset.src !== src) return; // もう別の顔に変わっていたら何もしない
       el.style.backgroundImage = `url("${src}")`;
-      el.textContent = "";
+    }, () => {
+      if (el.dataset.src === src) placeholder();
     });
   }
 
@@ -367,7 +428,7 @@ const UI = (() => {
   }
 
   return {
-    sleep, fillName, setBg, panBg, showSign, hideSign, showCg, hideCg, flash, shake, toast,
+    sleep, fillName, waitFirstImages, setBg, panBg, showSign, hideSign, showCg, hideCg, flash, shake, toast,
     say, hideMsg, choose, input, setStage, waitButtons, init,
     clearLog, showLogButton
   };
