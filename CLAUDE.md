@@ -37,6 +37,7 @@
 - 背景：`assets/bg/`。`data/world.js` の `image` と `pos`（絵のどこを中心にするか）
   - ruins と一枚絵 sky → `bg_haikyo.jpg` / bar → `bg_neon_wide.jpg`（`pos: "78% center"` でスマホでも右の視火が残る）/ bar_secret → `bg_neon_square.jpg`（隠し欠片「心の傷」専用。登録だけ）
   - バーの背景には視火が描いてあるので、バーで視火の全身を重ねない
+  - バーの入店：左端のネオン看板から3秒かけて78%まで流し、止まってから会話（`UI.panBg`）。「本日のおすすめ」は「看板を見る」のときだけ会話ウィンドウの上に出す（`UI.showSign`）
   - capsule・map・base・town・koun はまだ仮の色
 
 ## キャラの見た目（水彩っぽい画風）

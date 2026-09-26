@@ -60,6 +60,38 @@ const UI = (() => {
     paint($("bg"), def, $("bg-label"), def.label);
   }
 
+  // 背景を from の位置から to の位置まで、ms ミリ秒かけてゆっくり流す（終わるまで待つ）
+  // 画像が読み込めないときは流さずに、そのまま to の位置で止まった状態にする
+  async function panBg(id, from, to, ms) {
+    const def = D.backgrounds[id];
+    setBg(id);
+    const el = $("bg");
+    if (!def.image) return;
+    const loaded = await new Promise((resolve) => {
+      whenLoaded(def.image, () => resolve(true));
+      setTimeout(() => resolve(imgCache[def.image] === true), 2000);
+    });
+    if (!loaded) return;
+    el.style.transition = "none";
+    el.style.backgroundPosition = from;
+    void el.offsetWidth; // いったん from の位置で描いてから流し始める
+    el.style.transition = `background-position ${ms}ms ease-in-out`;
+    el.style.backgroundPosition = to;
+    await sleep(ms);
+    el.style.transition = "";
+  }
+
+  // 会話ウィンドウのすぐ上に出す看板（「本日のおすすめ」など）
+  function showSign(text) {
+    const el = $("sign");
+    el.textContent = text;
+    el.classList.remove("hidden");
+  }
+
+  function hideSign() {
+    $("sign").classList.add("hidden");
+  }
+
   function showCg(id) {
     const def = D.cgs[id];
     paint($("cg"), def, $("cg-caption"), def.caption);
@@ -335,7 +367,7 @@ const UI = (() => {
   }
 
   return {
-    sleep, fillName, setBg, showCg, hideCg, flash, shake, toast,
+    sleep, fillName, setBg, panBg, showSign, hideSign, showCg, hideCg, flash, shake, toast,
     say, hideMsg, choose, input, setStage, waitButtons, init,
     clearLog, showLogButton
   };

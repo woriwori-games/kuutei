@@ -141,8 +141,12 @@ button:disabled { color: #555; border-color: #555; cursor: default; }
 .small { align-self: center; font-size: 0.85rem; padding: 6px 14px; border-width: 1px; border-style: solid; color: var(--muted); }
 
 /* 看板 */
+/* 看板は会話ウィンドウのすぐ上（#bottom の中）に出す。視火の顔にかからないように */
+#sign {
+  align-self: center;
+  max-width: 100%;
+}
 .signboard {
-  margin-top: 8%;
   padding: 12px 18px;
   border: 2px solid #f687b3;
   border-radius: 8px;
