@@ -260,7 +260,10 @@ const UI = (() => {
     const loaded = await Promise.race([loadImageP(c.body), sleep(INTRO_WAIT_LOAD).then(() => false)]);
     if (!loaded) return false;
     const el = $("intro");
-    el.querySelector("img").src = c.body;
+    const img = el.querySelector("img");
+    img.src = c.body;
+    // 新しい絵を画面に描く準備ができてから出す（前に出したキャラの絵が一瞬見えないように）
+    if (img.decode) await img.decode().catch(() => {});
     el.querySelector(".intro-name").textContent = fillName(c.name);
     el.classList.toggle("portrait", isPortrait());
     hideMsg();
@@ -278,6 +281,7 @@ const UI = (() => {
     introShowing = false;
     onAdvance = null;
     el.classList.add("hidden");
+    img.removeAttribute("src"); // 次のキャラのときに前の絵が残らないよう、額縁を空にしておく
     return true;
   }
 
