@@ -65,9 +65,12 @@ GAME_DATA.scenario = {
   // ---------- 名前 ----------
   namingIntro: [
     { who: "aibou", text: "念のため確認。名前、言える？" },
-    { who: "player", text: "……え、待って" },
+    { who: "player", text: "……あれ" },
     { who: "player", text: "……出てこない" },
     { who: "aibou", text: "コールドスリープの副作用かな。メモリにも残ってない。そこだけ読めない" },
+    { who: "player", text: "……コールド、何？" },
+    { who: "aibou", text: "……あとで説明する。今は名前" },
+    { who: "player", text: "雑" },
     { who: "player", text: "じゃあつけてよ、適当でいいから" },
     { who: "aibou", text: "適当でいいの？" },
     { who: "player", text: "いい" },
