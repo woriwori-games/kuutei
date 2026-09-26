@@ -42,6 +42,9 @@ const Scenes = (() => {
   }
 
   async function wake() {
+    // 暗転のあいだに、相棒とプレイヤーの顔の読み込みを少しだけ待つ（回線が遅いとき用。最大3秒）
+    UI.setBg("black");
+    await UI.waitFirstImages(3000);
     await play(sc.wake);
     return "naming";
   }
