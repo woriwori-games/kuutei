@@ -16,7 +16,7 @@ GAME_DATA.backgrounds = {
   // 駅のホーム。時刻表の掲示板が真ん中より右にあるので、それが残るように右寄せ
   town_station: { color: "#262b33", label: "駅のホーム", image: "assets/bg/bg_town_station.jpg", pos: "62% center" },
   // 社長室。壁の額縁は空飛ぶ戦艦の設計図。社訓「UNKOからKOUNへ」の額縁は絵に映っていない別の壁にある
-  koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg" },
+  koun:      { color: "#2b2b30", label: "KOUNインダストリー 社長室", image: "assets/bg/bg_koun.jpg", pos: "35% center" }, // スマホでも左の壁の設計図が見えるように
   // バーの絵には視火がすでに描いてある。バーの場面で視火の全身を上に重ねない
   // 横に長い絵（約3:1）なので、スマホ縦画面で切れても右側の視火が残るように右寄せ
   bar:       { color: "#2a1830", label: "焼け野原にネオン", image: "assets/bg/bg_neon_wide.jpg", pos: "78% center" },
@@ -28,15 +28,18 @@ GAME_DATA.backgrounds = {
 // 一枚絵は横長（16:9）で、人物が左右に離れている絵もあるので、ふつうは切らずに全体を見せる（fit: "contain"、余白は黒）。
 // 置く位置は少し上寄り（会話ウィンドウに顔が隠れないように）。
 // fit: "cover" と書くと、背景と同じく画面いっぱいに広げる（はみ出したところは切れる）。
+// スマホ縦（画面が縦長）のときだけ、zoom と pos で少し拡大して左右の端を切る。パソコンでは切らずに全体。
+//   zoom … 画面の横幅の何倍の大きさで出すか（例 1.35）
+//   pos  … 絵の左端 0%〜右端 100% のどこを画面の真ん中にするか（例 "42%"）
 GAME_DATA.cgs = {
   sky:     { color: "#3b3f4a", caption: "廃墟。空に見慣れない影", image: "assets/bg/bg_haikyo.jpg", fit: "cover" }, // 空に空挺の影が描いてある
   record:  { color: "#3a3526", caption: "記録 #0412 ― 再生中", image: null, fit: "cover" }, // 絵は後で
-  wake:    { color: "#000", caption: "目覚め", image: "assets/cg/cg_wake.jpg" },               // 目覚め：カプセルをのぞきこむ相棒
-  hangar2: { color: "#000", caption: "格納庫の二人", image: "assets/cg/cg_hangar.jpg" },       // 格納庫：骨組みは誰が作ったか
-  sofa:    { color: "#000", caption: "おぱのソファ", image: "assets/cg/cg_opa_sofa.jpg" },     // KOUN：ソファを空けとく
-  memory:  { color: "#000", caption: "相棒のメモリ 復元中", image: "assets/cg/cg_aibou_memory.jpg" }, // 相棒のメモリが戻るとき
-  renkin:  { color: "#000", caption: "錬金", image: "assets/cg/cg_renkin.jpg" },               // 錬金：薄め具合を選ぶところ
-  okaeri:  { color: "#000", caption: "ただいま・おかえり", image: "assets/cg/cg_okaeri.jpg" }  // 視火の「おかえり」
+  wake:    { color: "#000", caption: "目覚め", image: "assets/cg/cg_wake.jpg", zoom: 1.35, pos: "42%" },             // 目覚め：プレイヤーと相棒の顔
+  hangar2: { color: "#000", caption: "格納庫の二人", image: "assets/cg/cg_hangar.jpg", zoom: 1.35, pos: "50%" },     // 格納庫：骨組みは誰が作ったか
+  sofa:    { color: "#000", caption: "おぱのソファ", image: "assets/cg/cg_opa_sofa.jpg", zoom: 1.15, pos: "50%" },   // KOUN：おぱとプレイヤーが左右に離れているので、あまり切らない
+  memory:  { color: "#000", caption: "相棒のメモリ 復元中", image: "assets/cg/cg_aibou_memory.jpg", zoom: 1.4, pos: "45%" }, // 相棒のメモリが戻るとき
+  renkin:  { color: "#000", caption: "錬金", image: "assets/cg/cg_renkin.jpg", zoom: 1.35, pos: "45%" },             // 錬金：薄め具合を選ぶところ
+  okaeri:  { color: "#000", caption: "ただいま・おかえり", image: "assets/cg/cg_okaeri.jpg", zoom: 1.25, pos: "52%" } // 視火とプレイヤー
 };
 
 // 地図の行き先（試作品では2か所）

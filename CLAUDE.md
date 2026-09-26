@@ -40,13 +40,14 @@
 - 先読みは player と aibou の顔・目覚めの一枚絵 → カプセルの背景 → 廃墟の背景 → 残り、の順
 - 読み込み中は、背景・一枚絵は色だけ（場所の名前は出さない）、顔は明るい無地の枠。名前や仮の四角を出すのは、画像がないときか読み込めなかったときだけ
 - 背景：`assets/bg/`。`data/world.js` の `image` と `pos`（絵のどこを中心にするか）
-  - capsule → `bg_capsule.jpg` / base（格納庫）→ `bg_base.jpg` / koun（社長室）→ `bg_koun.jpg` / town_station（駅のホーム。移動中の町の最初の場面）→ `bg_town_station.jpg`（`pos: "62% center"` で時刻表の掲示板が残る）
+  - capsule → `bg_capsule.jpg` / base（格納庫）→ `bg_base.jpg` / koun（社長室）→ `bg_koun.jpg`（`pos: "35% center"` でスマホでも左の壁の設計図が見える）/ town_station（駅のホーム。移動中の町の最初の場面）→ `bg_town_station.jpg`（`pos: "62% center"` で時刻表の掲示板が残る）
   - 社長室の壁の額縁は空飛ぶ戦艦の設計図（社長も空を飛ぶものを造りたかった人、という含み）。社訓「UNKOからKOUNへ」の額縁は絵に映っていない別の壁にある
   - ruins と一枚絵 sky → `bg_haikyo.jpg` / bar → `bg_neon_wide.jpg`（`pos: "78% center"` でスマホでも右の視火が残る）/ bar_secret → `bg_neon_square.jpg`（隠し欠片「心の傷」専用。登録だけ）
   - バーの背景には視火が描いてあるので、バーで視火の全身を重ねない
   - バーの入店：左端のネオン看板から3秒かけて78%まで流し、止まってから会話（`UI.panBg`）。「本日のおすすめ」は「看板を見る」のときだけ会話ウィンドウの上に出す（`UI.showSign`）
   - map と town（駅以外の町の場面）はまだ仮の色。駅以外の町は絵ができるまで town を使う
-- 一枚絵：`assets/cg/`（16:9）。切らずに全体を見せる（contain・余白は黒、縦40%の位置）。sky だけ画面いっぱい（`fit: "cover"`）
+- 一枚絵：`assets/cg/`（16:9）。パソコンでは切らずに全体を見せる（contain・余白は黒、縦40%の位置）。sky だけ画面いっぱい（`fit: "cover"`）
+  - スマホ縦（高さが幅の1.3倍より大きい）では、cgs の `zoom`（横幅の何倍）と `pos`（絵のどこを画面の真ん中にするか）で拡大して左右を切る（`js/ui.js` の `layoutCg`）。wake 1.35/42%、hangar2 1.35/50%、sofa 1.15/50%、memory 1.4/45%、renkin 1.35/45%、okaeri 1.25/52%
   - wake（`cg_wake.jpg`）：目覚め「……生体反応あり。起きた？」〜「……うるさい……」
   - hangar2（`cg_hangar.jpg`）：格納庫「この骨組み、誰が作ったの」〜「数えるの、途中でやめた」のあとの「……」
   - sofa（`cg_opa_sofa.jpg`）：おぱと話す1回目「どうぞ、お掛けください」〜最後の「……はい」
