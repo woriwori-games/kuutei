@@ -12,6 +12,17 @@ const Scenes = (() => {
     return Object.values(S().ship).reduce((n, list) => n + list.length, 0);
   }
 
+  // 欠片を入れる部位。本来の部位（home）が2個埋まっていたら、空いている部位のうち入っている数がいちばん少ない部位
+  // （同じなら shipParts の順で先のもの）。全部埋まっているときは起きない前提
+  const PART_SLOTS = 2;
+  function partFor(home) {
+    const count = (p) => S().ship[p.id].length;
+    if (count(home) < PART_SLOTS) return home;
+    const open = D.shipParts.filter((p) => count(p) < PART_SLOTS);
+    if (open.length === 0) return home;
+    return open.reduce((best, p) => (count(p) < count(best) ? p : best));
+  }
+
   // 空挺にはまっている欠片のうち、「少しだけ」薄めたものの数
   function lightCount() {
     return Object.values(S().ship).reduce((n, list) => n + list.filter((f) => f.tuning === "light").length, 0);
@@ -355,8 +366,8 @@ const Scenes = (() => {
           s.flags.toldJemi = true;
           await play(sc.jemiTold[reading]);
         } else {
-          Game.addTalk("jemi");
-          await play(sc.jemiTalks);
+          const n = Game.addTalk("jemi");
+          await play(jemiTalkSteps(n));
         }
       } else if (i === 1) {
         await play(sc.recordJemi);
@@ -364,6 +375,20 @@ const Scenes = (() => {
         return "map";
       }
     }
+  }
+
+  // ジェミのいつものセリフ：端末の今の時刻で「時間帯のひとこと」、話しかけた回数で「話題」（8個で一周）
+  // 6時00分〜6時02分だけは、その二つの代わりに特別なセリフ
+  function jemiTalkSteps(n) {
+    const t = sc.jemiTalks;
+    const now = new Date();
+    const hm = `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const special = t.special.find((x) => x.at.includes(hm));
+    if (special) return special.steps;
+    const h = now.getHours();
+    const greet = t.greet.find((g) => h >= g.hours[0] && h <= g.hours[1]);
+    const topic = t.topics[(n - 1) % t.topics.length];
+    return [...(greet ? greet.steps : []), ...topic];
   }
 
   // 山田のいつものセリフを、話しかけた合計回数から選ぶ
@@ -435,11 +460,17 @@ const Scenes = (() => {
     const ctx = await play(steps);
     const id = ctx.reading;
     const frag = D.fragments[id];
-    const part = D.shipParts.find((p) => p.system === frag.system);
+    const home = D.shipParts.find((p) => p.system === frag.system);
+    const part = partFor(home);
     s.choices[recordId + "_reading"] = id;
 
+    // 本来の部位が満杯なら、相棒がひとこと言って空いている部位に回す
+    if (part !== home) {
+      const fill = (text) => text.replace("{from}", home.name).replace("{to}", part.name);
+      await play(sc.partOverflow.map((st) => ({ ...st, text: fill(st.text) })));
+    }
     s.ship[part.id].push({ id, tuning: ctx.tuning });
-    s.emotions[frag.system]++;
+    s.emotions[frag.system]++; // 船の性格に使う数は、入った部位ではなく選んだ欠片の系統で足す
     // 進行度は「はめた欠片の数 + 1」（1個目で2、2個目で3）
     s.progress = Math.max(s.progress, placedCount() + 1);
 

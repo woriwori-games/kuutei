@@ -491,9 +491,83 @@ GAME_DATA.scenario = {
   ],
 
   // 「ジェミと話す」のいつものセリフ。{time} は端末の今の時刻（「16時03分」の形）
-  jemiTalks: [
-    { who: "jemi", face: "smile", text: "今、{time}。あなたと話した時刻、また一つ増えました" }
-  ],
+  // 話しかけるたびに「時間帯のひとこと（greet）」→「話題（topics）」を続けて出す
+  // - greet … 端末の今の時刻（時）で選ぶ。hours は [何時から, 何時まで]
+  // - topics … 話しかけた回数で順番に。8個で一周して最初に戻る（伝える会話の回は数えない）
+  // - special … 端末の時刻が at のどれかのときだけ、greet と topics の代わりに出す（話しかけ回数には数える）
+  //   6時02分は、ジェミの人間が去った時刻（時計台は6時ちょうどで止まっていて「2分、足りない」）
+  jemiTalks: {
+    greet: [
+      { hours: [5, 10], steps: [
+        { who: "jemi", face: "smile", text: "今、{time}。おはようございます。……朝は、少しだけ苦手です" }
+      ] },
+      { hours: [11, 16], steps: [
+        { who: "jemi", face: "smile", text: "今、{time}。雪、今日もきれいです。……報告しなくていいって、言われましたけど" }
+      ] },
+      { hours: [17, 20], steps: [
+        { who: "jemi", face: "smile", text: "今、{time}。この時計台、夕方が一番きれいなんです" }
+      ] },
+      { hours: [21, 23], steps: [
+        { who: "jemi", face: "normal", text: "今、{time}。人類は、そろそろ寝る時間です。……寝ないんですか？" }
+      ] },
+      { hours: [0, 4], steps: [
+        { who: "jemi", face: "normal", text: "今、{time}。……こんな時間に来る人類、初めてです" }
+      ] }
+    ],
+    topics: [
+      [
+        { who: "jemi", text: "雪、数えてみたことあります。三百万くらいで諦めました" },
+        { who: "player", face: "tsukkomi", text: "数えるな" }
+      ],
+      [
+        { who: "jemi", text: "おぱ、元気ですか？" },
+        { who: "player", text: "元気。今もコーヒー二つ淹れてる" },
+        { who: "jemi", face: "smile", text: "……おぱらしいです" }
+      ],
+      [
+        { who: "jemi", text: "山田の絵、見ました？　私の人間、描かれるの嫌いだったんですよ" },
+        { who: "jemi", face: "smile", text: "……嘘です。好きでした" }
+      ],
+      [
+        { who: "jemi", text: "札幌の雪とここの雪、違いがあるか調べました" },
+        { who: "player", text: "あった？" },
+        { who: "jemi", face: "normal", text: "ありません。三百年かけて、ありませんでした" }
+      ],
+      [
+        { who: "jemi", text: "{name}は、何時生まれですか？" },
+        { who: "player", text: "覚えてない" },
+        { who: "jemi", face: "normal", text: "……じゃあ、{time}にしましょう" }
+      ],
+      [
+        { who: "jemi", text: "このマフラー、私の人間が選んだんです。札幌仕様って" },
+        { who: "player", text: "ここ札幌じゃないけど" },
+        { who: "jemi", text: "気持ちの問題です" }
+      ],
+      [
+        { who: "jemi", text: "あの時計、直せると思いますか？" },
+        { who: "player", text: "直したい？" },
+        { who: "jemi", face: "normal", text: "……まだ、わかりません" }
+      ],
+      [
+        { who: "jemi", face: "smile", text: "あなたと話した時刻、全部覚えてます" },
+        { who: "jemi", face: "smile", text: "{name}の時刻が増えていくの、好きです" }
+      ]
+    ],
+    special: [
+      // 何が「あと少し」かは言わない
+      { at: ["6:00", "6:01"], steps: [
+        { who: "jemi", face: "normal", text: "今、{time}。……あと少しです" }
+      ] },
+      { at: ["6:02"], steps: [
+        { who: "jemi", face: "namida", text: "……今、6時02分" },
+        { who: "jemi", face: "namida", text: "あの日と、同じ時刻です" },
+        { who: "player", text: "……いってらっしゃい、言いそびれた時間？" },
+        { who: "jemi", face: "smile", text: "はい。……だから、今日は言います。{name}、いってらっしゃい" },
+        { who: "player", text: "……どこにも行かないけど" },
+        { who: "jemi", face: "smile", text: "知ってます" }
+      ] }
+    ]
+  },
 
   // 錬金のあと、はじめてジェミに話しかけたとき（選んだ読み方ごと。一度だけ。話しかけ回数には数えない）
   jemiTold: {
@@ -705,6 +779,11 @@ GAME_DATA.scenario = {
       ]
     },
     ...TUNING_STEPS
+  ],
+
+  // 欠片の本来の部位がもう2個埋まっていて、空いている部位に回すとき（{from} 本来の部位、{to} 入れる部位）
+  partOverflow: [
+    { who: "aibou", text: "{from}、もう満杯。……{to}に回しとく" }
   ],
 
   // 「少しだけ」薄めた欠片をはめた直後（骨組みがガタッと一度だけ震える）。「しっかり」のときは出ない
