@@ -210,12 +210,13 @@ GAME_DATA.scenario = {
   // 2回目以降におぱに話しかけたとき（回数で順番に。最後のものをくり返す）
   opaTalks: [
     [
-      { who: "opa", text: "ソファ、座っていいですよ！　社長の席以外なら！" },
-      { who: "player", text: "どれが社長の席？" },
-      { who: "opa", text: "全部です！" },
-      { who: "player", text: "じゃあ立ってる" },
-      { who: "opa", text: "「じゃあ立ってる」……！　この会社への、深い敬意……！" },
-      { who: "player", text: "違う違う。……ソファ、社長の席でしょ。座れないよ" }
+      { who: "opa", text: "どうぞ、お掛けください" },
+      { text: "（ソファを見る。少しだけ座面がへこんでいる）" },
+      { who: "player", text: "……ソファはいいや。空けとく" },
+      { who: "opa", text: "……！　社長がいつか戻ってくると、信じてくださっている……！" },
+      { who: "player", text: "いや、そこまでは言ってない" },
+      { who: "player", text: "……でも、空けとく" },
+      { who: "opa", text: "……はい" }
     ],
     [
       { who: "opa", text: "コーヒー、飲みますか？　冷めたのでよければ！　毎朝ひとつ余るので！" },
@@ -295,12 +296,21 @@ GAME_DATA.scenario = {
       { who: "player", text: "看板として致命的じゃん。……でも、ちゃんと光ってるから、いいか" },
       { who: "mama", text: "そう。切れてても読めるでしょう？　人間の言葉って、そういうものよ" }
     ],
-    [
-      { who: "mama", text: "おかえり" },
-      { who: "player", text: "ただいま、って言うほど来てないけど" },
-      { who: "mama", text: "言っていいのよ。……言える相手がいるの、悪くないわね" },
-      { who: "player", text: "……ただいま" }
-    ]
+    // 「ただいま」には必ず「おかえり」を返してから、セーブの確認に入る（saveAsk で確認のセリフを差し替え）
+    {
+      steps: [
+        { who: "mama", text: "おかえり" },
+        { who: "player", text: "ただいま、って言うほど来てないけど" },
+        { who: "mama", text: "……ただいまって、言っていいのよ" },
+        { who: "player", text: "……ただいま" },
+        { who: "mama", text: "おかえり" },
+        { text: "（少し間）" },
+        { wait: 700 }
+      ],
+      saveAsk: [
+        { who: "mama", text: "で。今日のこと、覚えとく？" }
+      ]
+    }
   ],
   mamaSaveAsk: [
     { who: "mama", text: "覚えておく？" }
@@ -388,14 +398,21 @@ GAME_DATA.scenario = {
           value: "light",
           effects: { influence: 1 },
           then: [
-            { who: "aibou", text: "了解。けっこうクセが出ると思う。ベルト締めてね" },
-            { who: "player", text: "船にベルトあるの？" },
-            { who: "aibou", text: "まだない" }
+            { who: "aibou", text: "了解。少しだけにしとく" }
           ]
         }
       ]
     },
     { who: "aibou", text: "じゃあ、はめるよ" }
+  ],
+
+  // 「少しだけ」薄めた欠片をはめた直後（骨組みがガタッと一度だけ震える）。「しっかり」のときは出ない
+  // まだ飛べない段階なので、飛ぶ話は「いつか」の話としてだけ出す
+  tuningLightAfter: [
+    { who: "player", text: "……今、動いた？" },
+    { who: "aibou", text: "元気な欠片だね。薄めなかった分、クセが残ってる" },
+    { who: "aibou", text: "飛ぶ日は、ベルト二重にしよう" },
+    { who: "player", text: "今から不安なんだけど" }
   ],
 
   // 試作品の終わりのお知らせ

@@ -52,6 +52,15 @@ const UI = (() => {
     el.classList.add("go");
   }
 
+  // 指定した部品を一度だけガタッと揺らす
+  function shake(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    el.classList.remove("jolt");
+    void el.offsetWidth;
+    el.classList.add("jolt");
+  }
+
   function toast(text) {
     const el = $("toast");
     el.textContent = text;
@@ -284,7 +293,7 @@ const UI = (() => {
   }
 
   return {
-    sleep, fillName, setBg, showCg, hideCg, flash, toast,
+    sleep, fillName, setBg, showCg, hideCg, flash, shake, toast,
     say, hideMsg, choose, input, setStage, waitButtons, init,
     clearLog, showLogButton
   };
