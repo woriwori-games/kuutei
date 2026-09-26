@@ -311,8 +311,10 @@ GAME_DATA.scenario = {
     { who: "yamada", text: "そ。俺の人間。毎日描いてんの。にゃーん" },
     { who: "player", face: "tsukkomi", text: "にゃーんって何" },
     { who: "yamada", text: "知らん。気づいたら言ってた (´_ゝ｀)" },
-    { who: "player", text: "欠片、分けてほしいんだけど" },
-    { who: "yamada", face: "normal", text: "……あー。そういうことね。俺が預かってんの、たぶんこれ" }
+    { who: "player", text: "……ねぇ山田。これ、上手いね" },
+    { who: "yamada", face: "warai", text: "だろｗ　でも、まだなんよ" },
+    { who: "player", text: "まだ？" },
+    { who: "yamada", face: "normal", text: "俺の人間に、言われたことあってさ。……見る？" }
   ],
 
   // 山田の記録（何度でも見られる）
