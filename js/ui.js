@@ -12,9 +12,15 @@ const UI = (() => {
     return new Promise((r) => setTimeout(r, ms));
   }
 
+  // 会話の {name} をプレイヤーの名前に、{time} を端末の今の時刻（「16時03分」の形）に置き換える
   function fillName(text) {
     const name = Game.state.playerName || "？？？";
-    return text.replace(/\{name\}/g, () => name);
+    return text.replace(/\{name\}/g, () => name).replace(/\{time\}/g, () => nowText());
+  }
+
+  function nowText() {
+    const d = new Date();
+    return `${d.getHours()}時${String(d.getMinutes()).padStart(2, "0")}分`;
   }
 
   // ---------- 画像 ----------
@@ -87,8 +93,8 @@ const UI = (() => {
       if (id !== "player" && id !== "aibou") rest.push(...faceList(id));
     }
     for (const id in D.backgrounds) if (D.backgrounds[id].image) rest.push(D.backgrounds[id].image);
-    // 紹介カットの全身（KOUN・美術室の背景と一緒に。そのほかのキャラはそのあと）
-    for (const id of ["opa", "yamada"]) rest.push(D.characters[id].body);
+    // 紹介カットの全身（KOUN・美術室・時計台の背景と一緒に。そのほかのキャラはそのあと）
+    for (const id of ["opa", "yamada", "jemi"]) rest.push(D.characters[id].body);
     for (const id in D.characters) if (D.characters[id].body) rest.push(D.characters[id].body);
     for (const id in D.cgs) if (D.cgs[id].image) rest.push(D.cgs[id].image);
     await Promise.all([...new Set(rest)].filter((src) => !first.includes(src)).map(loadImageP));
